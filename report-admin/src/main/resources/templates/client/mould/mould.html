@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+    <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="mould-form">
+					<div class="select-list">
+						<ul>
+							<li>
+								模板名称：<input type="text" name="mouldName"/>
+							</li>
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+                
+            <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+		        <a class="btn btn-success" onclick="$.operate.add1(0)" shiro:hasPermission="client:mould:add">
+                    <i class="fa fa-plus"></i> 新增
+                </a>
+<!--                <a class="btn btn-primary" onclick="$.operate.editTree()" shiro:hasPermission="client:datasource:edit">-->
+<!--		            <i class="fa fa-edit"></i> 修改-->
+<!--		        </a>-->
+	        </div>
+       		 <div class="col-sm-12 select-table table-striped">
+	            <table id="bootstrap-tree-table" data-mobile-responsive="true"></table>
+	        </div>
+	    </div>
+	</div>
+	
+	<div th:include="include :: footer"></div>
+
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content" style="width: 800px; height: 560px;">
+				<div class="modal-body" style="width: 100%; height: 85%;">
+					<table class="table table-striped table-bordered" style="width: 100%; height: 100%;">
+						<thead>
+						<tr>
+							<td width="8%">图标类别：</td>
+							<td width="12%" colspan="6">
+								<div class="col-sm-8 changed">
+									<select name="chartType" id="chartType" size="19" multiple="multiple" style="width: 100%; text-align:center;text-align-last:center;padding-left:6px; margin:-0.6rem 0;">
+										<option value="0" >请选择图表类别</option>
+										<option value="1" >走势图</option>
+										<option value="2" >同比环比</option>
+										<option value="3" >分布图</option>
+									</select>
+								</div>
+							</td>
+						</tr>
+
+<!--						<tr>-->
+<!--							<td width="8%" colspan="1" rowspan="2">条件：</td>-->
+<!--							<td width="12%" colspan="5" rowspan="2">-->
+<!--								<div class="col-sm-8 changed">-->
+<!--									<select name="cdt" id="cdt" size="19" multiple="multiple" style="width: 100%; text-align:center;text-align-last:center;padding-left:6px; margin:-0.6rem 0;">-->
+<!--									</select>-->
+<!--								</div>-->
+<!--							</td>-->
+<!--							<td width="3%" rowspan="1">-->
+<!--								<a class="btn btn-success" onclick="delOneOption()" >-->
+<!--									<i class="fa fa-remove"></i>-->
+<!--								</a>-->
+<!--							</td>-->
+<!--						</tr>-->
+						</thead>
+
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" onclick="myConfirm()">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		var addFlag = [[${@permission.hasPermi('client:mould:add')}]];
+		var editFlag = [[${@permission.hasPermi('client:mould:edit')}]];
+		var removeFlag = [[${@permission.hasPermi('client:mould:remove')}]];
+		var datas = [[${@dict.getType('sys_show_hide')}]];
+		var prefix = ctx + "client/dzReportMould";
+
+		$(function() {
+		    var options = {
+		        url: prefix + "/listByPage",
+		        createUrl: prefix + "/add/{id}",
+		        updateUrl: prefix + "/edit/{id}",
+		        removeUrl: prefix + "/remove/{id}",
+		        modalName: "报表模板",
+		        columns: [
+					{
+						checkbox: true
+					},
+					 {
+						title: '模板名称',
+						field: 'mouldName',
+						width: '20%',
+						formatter: function(value, row, index) {
+							if ($.common.isEmpty(row.icon)) {
+								return row.mouldName;
+							} else {
+								return '<i class="' + row.icon + '"></i> <span class="nav-label">' + row.mouldName + '</span>';
+							}
+						}
+					},
+					{
+						field: 'remark',
+						title: '备注',
+						width: '10%',
+						align: "center"
+					},
+					{
+						field: 'dzTblName',
+						title: '报表名',
+						width: '15%',
+						align: "center"
+					},
+					{
+						title: '创建者id',
+						field: 'createBy',
+						width: '10%',
+						align: "center"
+					},
+					{
+						field: 'createTime',
+						title: '创建时间',
+						width: '10%',
+						align: "center"
+					},
+					{
+						title: '操作',
+						width: '20%',
+						field: 'status',
+						align: "center",
+						formatter: function(value, row, index) {
+							var actions = [];
+							if (value == "0") {
+								actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit1(\'' + row.id + '\')"><i class="fa fa-edit"></i>修改</a> ');
+								// actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="editDataItem(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+								actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+								actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="commitMould(\'' + row.id + '\')"><i class="fa fa-arrow-circle-o-up"></i>提交</a>');
+							}else{
+								actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="chartReport(\'' + row.id + '\')"><i class="fa fa-bar-chart"></i>图形报表</a> ');
+							}
+							// if (value == "0" || value == "1") {
+							// 	actions.push('<a class="btn btn-success btn-xs ' + '" href="#" onclick="viewData(\'' + row.id + '\')"><i class="fa fa-edit"></i>查看</a> ');
+							// 	actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="editData(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+							// 	actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-edit"></i>删除</a> ');
+							// 	actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="changeStatus(\'' + row.id + '\')"><i class="fa fa-edit"></i>提交</a> ');
+							// }
+							return actions.join('');
+						}
+					}
+				]
+		    };
+		    $.treeTable.init(options);
+		});
+		
+		function editDataItem(id) {
+			// var url = ctx + "client/dzReportMould/editMould/" + id;
+			var url = ctx + "client/dzReportMould/editMould/" + id;
+			console.log("url:" + url);
+			$.modal.open("编辑模板", url, 1400, 700);
+		}
+		
+		function remove(id) {
+			$.modal.confirm("确定删除该模板吗？", function() {
+				$.ajax({
+					type : 'post',
+					url: prefix + "/remove/" + id,
+					success : function(result) {
+						if (result.code == web_status.SUCCESS) {
+		                	$.modal.msgSuccess(result.msg);
+		                	$.treeTable.refresh();
+		                } else {
+		                	$.modal.msgError(result.msg);
+		                }
+					}
+				});
+			});
+		}
+
+		/**
+		 * 提交模板
+		 */
+		function commitMould(id){
+			$.modal.confirm("确定提交该模板吗？", function() {
+				$.ajax({
+					type : 'post',
+					url: prefix + "/commit/" + id,
+					success : function(result) {
+						if (result.code == web_status.SUCCESS) {
+							$.modal.msgSuccess(result.msg);
+							$.treeTable.refresh();
+						} else {
+							$.modal.msgError(result.msg);
+						}
+					}
+				});
+			});
+		}
+
+		function myConfirm(){
+			var chartType = document.getElementById("chartType").value;
+			var url = ctx + "client/dzReportMould/chartReport/" + chartType;
+			console.log("url:" + url);
+			$.modal.open("编辑图形模板", url, 1400, 700);
+		}
+
+		/**
+		 * 设置图形报表
+		 */
+		function chartReport(id) {
+			var url = ctx + "client/dzReportMould/chartReport/" + id;
+			console.log("url:" + url);
+			$.modal.open("编辑模板", url, 1400, 700);
+		}
+	</script>
+</body>
+</html>

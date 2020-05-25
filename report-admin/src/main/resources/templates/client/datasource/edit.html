@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="white-bg">
+	<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+		<form class="form-horizontal m" id="form-datasource-edit" th:object="${dbInfo}">
+			<input id="id" name="id" type="hidden" th:field="*{id}" />
+			<div class="form-group">
+				<label class="col-sm-3 control-label ">数据源名称：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" id="name" name="name" readonly="true" th:field="*{name}"/>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">数据库类型：</label>
+				<div class="col-sm-8">
+					<select id="dbType" name="dbType" class="form-control" type="text" onclick="changeSampleType()">
+						<option value="mysql" selected="selected">mysql</option>
+						<option value="sqlserver" >sqlserver</option>
+						<option value="oracle" >oracle</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">IP地址：</label>
+				<div class="col-sm-8">
+					<input class="form-control" type="text" name="dbIp" id="dbIp" th:field="*{dbIp}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">端口号：</label>
+				<div class="col-sm-8">
+					<input id="dbPort" name="dbPort" class="form-control" type="text" th:field="*{dbPort}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">数据库账号：</label>
+				<div class="col-sm-8">
+					<input id="dbUser" name="dbUser" class="form-control" type="text" th:field="*{dbUser}">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-3 control-label">数据库密码：</label>
+				<div class="col-sm-8">
+					<input id="dbPasswd" class="form-control" type="text" name="dbPasswd" th:field="*{dbPasswd}">
+				</div>
+			</div>
+			<div class="form-group">
+					<label class="col-sm-3 control-label">数据库名：</label>
+					<div class="col-sm-8">
+						<input id="dbName" class="form-control" type="text" name="dbName" th:field="*{dbName}">
+				</div>
+			</div>
+		</form>
+	</div>
+	<div th:include="include::footer"></div>
+	 <script>
+        var prefix = ctx + "client/datasource";
+        
+        $("#form-menu-add").validate({
+        	rules:{
+        		dbType:{
+        			required:true,
+        		},
+        		name:{
+        			required:true,
+        			// remote: {
+                    //     url: prefix + "/checkNameUnique",
+                    //     type: "post",
+                    //     dataType: "json",
+                    //     data: {
+                    //     	"name" : function() {
+                    //             return $.common.trim($("#name").val());
+                    //         }
+                    //     },
+                    //     dataFilter: function(data, type) {
+                    //     	return $.validate.unique(data);
+                    //     }
+                    // }
+        		},
+				dbIp:{
+        			required:true
+        		},
+				dbPort:{
+					required:true,
+					digits:true
+				},
+				dbUser:{
+					required:true
+				},
+				dbPasswd:{
+					required:true
+				}
+        	},
+        	messages: {
+                "menuName": {
+                    remote: "数据源已经存在"
+                }
+            }
+        });
+        
+        function submitHandler() {
+	        if ($.validate.form()) {
+	            $.operate.save(prefix + "/edit", $('#form-datasource-edit').serialize());
+	        }
+	    }
+
+        // $(function() {
+        // 	$("#form-datasource-add").click(function(event) {
+        // 	    var obj = event.srcElement || event.target;
+        // 	    if (!$(obj).is("input[name='icon']")) {
+        // 	    	$(".icon-drop").hide();
+        // 	    }
+        // 	});
+        // 	$(".icon-drop").find(".ico-list i").on("click", function() {
+        // 		$('#icon').val($(this).attr('class'));
+        //     });
+        // 	$('input').on('ifChecked', function(event){
+        // 		var menuType = $(event.target).val();
+        // 		if (menuType == "M") {
+        //             $("#url").parents(".form-group").hide();
+        //             $("#perms").parents(".form-group").hide();
+        //             $("#icon").parents(".form-group").show();
+        //         } else if (menuType == "C") {
+        //         	$("#url").parents(".form-group").show();
+        //             $("#perms").parents(".form-group").show();
+        //             $("#icon").parents(".form-group").hide();
+        //         } else if (menuType == "F") {
+        //         	$("#url").parents(".form-group").hide();
+        //             $("#perms").parents(".form-group").show();
+        //             $("#icon").parents(".form-group").hide();
+        //         }
+        // 	});
+        // });
+
+		function doSubmit(index, layero){
+			var body = layer.getChildFrame('body', index);
+   			// $("#treeId").val(body.find('#treeId').val());
+   			// $("#treeName").val(body.find('#treeName').val());
+   			layer.close(index);
+		}
+    </script>
+</body>
+</html>

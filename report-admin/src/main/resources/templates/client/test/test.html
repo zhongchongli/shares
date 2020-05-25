@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+
+    <div class="container-div">
+		<div class="row">
+			<form class="form-horizontal m" id="form-datasource-add">
+				<input id="id" name="id" hidden="hidden">
+				<div class="form-group">
+					<label class="col-sm-3 control-label">数据源：</label>
+					<div class="col-sm-8">
+						<select id="name" name="name" class="form-control" type="text" onchange="changeDatabase()">
+
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label">业务表：</label>
+					<div class="col-sm-8">
+						<select id="TabName" name="TabName" class="form-control" type="text" onchange="changeTable()">
+
+						</select>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-sm-3 control-label">数据项：</label>
+					<div class="col-sm-8">
+						<select id="column" name="column" class="form-control" type="text" onchange="changeSampleType()">
+
+						</select>
+					</div>
+				</div>
+			</form>
+
+			<div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+				<a class="btn btn-info" onclick="importExcel()" shiro:hasPermission="client:test:import">
+					<i class="fa fa-upload"></i> 导入
+				</a>
+
+				<a class="btn btn-info" onclick="saveMould()" shiro:hasPermission="client:test:list">
+					<i class="fa"></i> 保存
+				</a>
+			</div>
+
+			<div class="col-sm-12 select-table table-striped">
+	            <table id="bootstrap-tree-table" data-mobile-responsive="true"></table>
+	        </div>
+	    </div>
+	</div>
+	
+	<div th:include="include :: footer"></div>
+	<script th:inline="javascript">
+		var prefix = ctx + "client/test";
+		//url: prefix + "/list",
+		var exportUrl = prefix + "/export";
+		var importUrl = prefix + "/importData";
+		$(document).ready(function () {
+			$.ajax({
+				type:"get",
+				url: prefix + "/dbsource",
+				dataType:'json',
+				success:function (data) {
+					var options = '<option value ="0">请选择</option>';
+					for (var i=0;i<data.rows.length;i++ ){
+						options += '<option value="' + data.rows[i].id + '" >' + data.rows[i].name + '</option>';
+					}
+					$('#name').append(options)
+				}
+			})
+		})
+
+		function changeDatabase() {
+			//获取被选中的option标签
+			// var dbId = $("#name").find("option:selected").text();
+			$('#column').empty();
+			var dbId = jQuery("#name option:selected").val();
+			$("#id").val(dbId);
+			var htmlHead = '';
+			var htmlBody = '';
+			var html = '';
+
+			$.ajax({
+				type:"get",
+				url: prefix + "/list?id=" + dbId,
+				dataType:'json',
+				success:function (data) {
+					$('#TabName').empty();
+					var options = '<option value ="0">请选择</option>';
+					for (var i=0;i<data.rows.length;i++ ){
+						options += '<option value="' + data.rows[i].name + '" >' + data.rows[i].description + '</option>';
+					}
+					$('#TabName').append(options)
+				}
+			})
+		}
+
+		function changeTable() {
+			//获取被选中的option标签
+			// var dbId = $("#TabName").find("option:selected").text();
+			var dbId = jQuery("#TabName option:selected").val();
+			var id = $("#id").val();
+			var htmlHead = '';
+			var htmlBody = '';
+			var html = '';
+
+			$.ajax({
+				type:"get",
+				url: prefix + "/columns?id=" + id + "&tblName=" + dbId,
+				dataType:'json',
+				success:function (data) {
+					$('#column').empty();
+					var options = '<option value ="0">请选择</option>';
+					for (var i=0;i<data.rows.length;i++ ){
+						options += '<option value="' + data.rows[i].name + '" >' + data.rows[i].description + '</option>';
+					}
+					$('#column').append(options)
+				}
+			})
+		}
+
+		function saveMould() {
+			var saveUrl = prefix + "/columns?id=" + id + "&tblName=" + dbId;
+			var formData = new FormData();
+			formData.append("id1", $('#id1').val());
+			formData.append("id2", $('#id2').val());
+			// $.ajax({
+			// 	type : 'post',
+			// 	url: prefix + "/remove/" + id,
+			// 	success : function(result) {
+			// 		if (result.code == web_status.SUCCESS) {
+			// 			$.modal.msgSuccess(result.msg);
+			// 			$.treeTable.refresh();
+			// 		} else {
+			// 			$.modal.msgError(result.msg);
+			// 		}
+			// 	}
+			// });
+			$.ajax({
+				url: importUrl,
+				data: formData,
+				cache: false,
+				contentType: false,
+				processData: false,
+				type: 'POST',
+				success: function (result) {
+					if (result.code == web_status.SUCCESS) {
+						$.modal.closeAll();
+						$.modal.alertSuccess(result.msg);
+						$.table.refresh();
+					} else {
+						layer.close(index);
+						$.modal.enable();
+						$.modal.alertError(result.msg);
+					}
+				}
+			});
+		}
+		// 导入数据
+		function importExcel(formId) {
+			var currentId = $.common.isEmpty(formId) ? 'importForm' : formId;
+			$.form.reset(currentId);
+			layer.open({
+				type: 1,
+				area: ['400px', '230px'],
+				fix: false,
+				//不固定
+				maxmin: true,
+				shade: 0.3,
+				title: '导入数据源数据',
+				content: $('#' + currentId),
+				btn: ['<i class="fa fa-check"></i> 导入', '<i class="fa fa-remove"></i> 取消'],
+				// 弹层外区域关闭
+				shadeClose: true,
+				btn1: function(index, layero){
+					var file = layero.find('#file').val();
+					if (file == '' || (!$.common.endWith(file, '.xls') && !$.common.endWith(file, '.xlsx'))){
+						$.modal.msgWarning("请选择后缀为 “xls”或“xlsx”的文件。");
+						return false;
+					}
+					var index = layer.load(2, {shade: false});
+					$.modal.disable();
+					var formData = new FormData();
+					formData.append("file", $('#file')[0].files[0]);
+					formData.append("updateSupport", $("input[name='updateSupport']").is(':checked'));
+					$.ajax({
+						url: importUrl,
+						data: formData,
+						cache: false,
+						contentType: false,
+						processData: false,
+						type: 'POST',
+						success: function (result) {
+							if (result.code == web_status.SUCCESS) {
+								$.modal.closeAll();
+								$.modal.alertSuccess(result.msg);
+								$.table.refresh();
+							} else {
+								layer.close(index);
+								$.modal.enable();
+								$.modal.alertError(result.msg);
+							}
+						}
+					});
+				}
+			});
+		}
+
+	</script>
+</body>
+
+<form id="importForm" enctype="multipart/form-data" class="mt20 mb10" style="display: none;">
+	<div class="col-xs-offset-1">
+		<input type="file" id="file" name="file"/>
+		<div class="mt10 pt5">
+			&nbsp;	<a onclick="$.table.importTemplate()" class="btn btn-default btn-xs"><i class="fa fa-file-excel-o"></i> 下载模板</a>
+		</div>
+		<font color="red" class="pull-left mt10">
+			提示：仅允许导入“xls”或“xlsx”格式文件！
+		</font>
+	</div>
+</form>
+</html>

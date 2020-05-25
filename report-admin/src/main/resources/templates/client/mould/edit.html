@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header">
+</head>
+<body class="white-bg">
+<style type="text/css">
+	td{
+		text-align:center;
+		border: 1px solid;
+		vertical-align: middle;
+	}
+	th{
+		text-align:center;
+		border: 1px solid;
+		vertical-align: middle;
+	}
+	input.checkbox {margin-left: 8px;}
+	.mybtn{background-color: #23c6c8; height: 34px; width: 70px; color: #FFFFFF}
+</style>
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+	<form class="form-horizontal m" id="form-mould-edit" th:object="${dzReportMould}">
+		<input id="dzMouldId" name="dzMouldId" th:field="*{id}" type="hidden">
+		<input id="id" name="id" type="hidden">
+<!--		<input id="dbInfoId" name="dbInfoId" th:field="*{dbInfoId}" type="hidden">-->
+		<div id='left-div' style="width:40%; display:inline-block;vertical-align: top; horiz-align: left; border: 1px solid;">
+			<table id="t4" class="table table-striped table-bordered" style="margin-top: 0">
+				<thead>
+				<tr>
+					<td width="6%">数据源：</td>
+					<td width="12%">
+						<div class="col-sm-8">
+							<select id="name" name="name" class="form-control" type="text" onchange="changeDatabase()">
+
+							</select>
+						</div>
+					</td>
+
+				</tr>
+				<tr>
+					<td width="6%">业务表：</td>
+					<td width="12%">
+						<div class="col-sm-8">
+							<select id="TabName" name="TabName" class="form-control" type="text" onchange="changeTable()">
+							</select>
+						</div>
+					</td>
+				</tr>
+				</thead>
+			</table>
+
+<!--			<input type="button" value="全选" onclick="checkAllByBtn('from', 1)">-->
+<!--			<input type="button" value="全部取消" onclick="checkAllByBtn('from', 0)">-->
+<!--			<input type="button" value="反选" onclick="checkAllByBtn('from', 2)">-->
+
+			<a class="btn btn-info" onclick="checkAllByBtn('from', 1)" ><i class="fa fa-check"></i> 全选</a>
+			<a class="btn btn-info" onclick="checkAllByBtn('from', 0)" ><i class="fa fa-check-circle-o"></i> 全部取消</a>
+			<a class="btn btn-info" onclick="checkAllByBtn('from', 2)" ><i class="fa fa-check-circle"></i> 反选</a>
+
+			<table id="from">
+				<thead>
+				<tr>
+					<td align="center" style="width: 5%;">
+						<input id="selectAllFrom" role="checkbox" type="checkbox" class="cbox checkbox" name="aa"/>
+					</td>
+					<!--						<th><input type="checkbox" name="aa" οnclick="checkAll(this);">全选</th>-->
+					<th style="width: 15%;">字段名</th>
+					<th style="width: 20%;">字段描述</th>
+					<th style="width: 10%;">字段类型</th>
+				</tr>
+				</thead>
+				<tbody id="tbodyFrom">
+
+				</tbody>
+			</table>
+		</div>
+		<div id='middle-div' style="width:8%; display:inline-block;vertical-align: center; horiz-align: center; ">
+			<div style="position: absolute; top:40%; left: 44.5%; transform: translate(-50%,-50%);background: #5B83AD;">
+<!--				<input type="button" value=">" onclick="addRow2Right()" />-->
+				<a class="btn btn-info" onclick="addRow2Right()" ><i class="fa "></i>添加→</a>
+			</div>
+			<div style="position: absolute; top:60%; left: 44.5%; transform: translate(-50%,-50%);background: #5B83AD;">
+<!--				<input type="button" value="<" onclick="removeRow()" />-->
+				<a class="btn btn-info" onclick="removeRow()" ><i class="fa "></i>←移除</a>
+			</div>
+		</div>
+		<div id='right-div' style="width: 50%; display:inline-block; vertical-align: top; horiz-align: right; border: 1px solid;">
+			<!--			<div style="display:inline-block;margin-left:10px; width: 47%">-->
+			<table id="t5" class="table table-striped table-bordered" style="margin-top: 0">
+				<thead>
+				<tr>
+					<td width="6%">模板名称：</td>
+					<td width="12%">
+						<div class="col-sm-8">
+							<input class="form-control" type="text" id="mouldName" name="mouldName" th:field="*{mouldName}" readonly="readonly"/>
+						</div>
+					</td>
+
+				</tr>
+				<tr>
+					<td width="6%">备注：</td>
+					<td width="12%">
+						<div class="col-sm-8">
+							<input class="form-control" type="text" name="remark" id="remark" th:field="*{remark}" >
+						</div>
+					</td>
+				</tr>
+				</thead>
+			</table>
+<!--			<input type="button" value="全选" onclick="checkAllByBtn('to', 1)">-->
+<!--			<input type="button" value="全部取消" onclick="checkAllByBtn('to', 0)">-->
+<!--			<input type="button" value="反选" onclick="checkAllByBtn('to', 2)">-->
+
+			<a class="btn btn-info" onclick="checkAllByBtn('to', 1)" ><i class="fa fa-check"></i> 全选</a>
+			<a class="btn btn-info" onclick="checkAllByBtn('to', 0)" ><i class="fa fa-check-circle-o"></i> 全部取消</a>
+			<a class="btn btn-info" onclick="checkAllByBtn('to', 2)" ><i class="fa fa-check-circle"></i> 反选</a>
+
+			<table id="to">
+				<thead>
+				<tr>
+					<td align="center" style="width: 5%;"><input id="selectAllTo" role="checkbox" type="checkbox" class="cbox checkbox"/></td>
+					<th style="width: 10%;">表单</th>
+					<th style="width: 15%;">字段名</th>
+					<th style="width: 20%;">字段描述</th>
+					<th style="width: 10%;">字段类型</th>
+					<th style="width: 10%;">关联项</th>
+					<th style="width: 25%;">公式</th>
+				</tr>
+				</thead>
+				<tbody id="tbodyTo">
+					<tr th:each="dzRMD : ${detailList}">
+						<td align="center" style="width:45px;"><input role="checkbox" type="checkbox" class="cbox checkbox" name="colTo"><input type="text" th:value="${dzRMD.dbInfoId}" hidden="hidden"></td>
+						<td th:text="${dzRMD.tblName}"></td>
+						<td th:text="${dzRMD.colName}"></td>
+						<td th:text="${dzRMD.colDepict}"></td>
+						<td>
+							<div th:switch="${dzRMD.dataType}">
+								<p th:case="0" th:text="varchar"></p>
+								<p th:case="1" th:text="float"/>
+								<p th:case="2" th:text="datetime"/>
+							</div>
+						</td>
+						<td><input type="text" th:value="${dzRMD.linkCol}"  ></td>
+						<td><input type="text" th:value="${dzRMD.formula}"  ></td>
+					</tr>
+				</tbody>
+			</table>
+			<input class="mybtn" data-toggle="modal" data-target="#myModal" type="button" value="添加">
+<!--			<a class="btn btn-info" data-target="#myModal" ><i class="fa fa-plus"></i> 添加</a>-->
+		</div>
+	</form>
+</div>
+
+<div th:include="include::footer"></div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content" style="width: 800px; height: 400px;">
+			<div class="modal-body">
+				<table class="table table-striped table-bordered">
+					<thead>
+					<tr>
+						<td width="7%">
+							字段描述
+						</td>
+						<td width="13%">
+							<input id="colDepict" name="colDepict" class="form-control" type="text" >
+						</td>
+						<td width="7%">字段类型:</td>
+						<td width="13%">
+							<select id="dataType" name="dataType" class="selectpicker show-tick form-control" type="text" data-live-search="true">
+								<option value="0" >请选择字段类型</option>
+								<option value="varchar" >字符</option>
+								<option value="float" >数值</option>
+								<option value="datetime" >时间</option>
+							</select>
+						</td>
+					</tr>
+					</thead>
+
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="confirm2()">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var prefix = ctx + "client/dzReportMould";
+
+	$("#form-menu-add").validate({
+		rules:{
+			mouldName:{
+				required:true,
+				remote: {
+					url: prefix + "/checkNameUnique",
+					type: "post",
+					dataType: "json",
+					data: {
+						"mouldName" : function() {
+							return $.common.trim($("#mouldName").val());
+						}
+					},
+					dataFilter: function(data, type) {
+						return $.validate.unique(data);
+					}
+				}
+			}
+		},
+		messages: {
+			"mouldName": {
+				remote: "报表模板已经存在"
+			}
+		}
+	});
+
+	function submitHandler() {
+		// if ($.validate.form()) {
+		//     $.operate.save(prefix + "/add", $('#form-datasource-add').serialize());
+		// }
+		console.log("submitHandler");
+		if ($.validate.form()) {
+			getDatas();
+		}
+	}
+
+	function getDatas() {
+		var id = $("#dzMouldId").val();
+		//var dbInfoId = $("#dbInfoId").val();		//数据源id
+		var mouldName = $("#mouldName").val();		//报表模板名称
+		var remark = $("#remark").val();			//报表模板备注
+		var trList = $("#tbodyTo").children("tr");	//字段列表
+		var detailList = '{"id":' + id + ',"mouldName":"' + mouldName + '","remark":"' + remark + '","detailList":[';
+		for (var i=0; i<trList.length; i++) {
+			var tdArr = trList.eq(i).find("td");
+			var dbId = tdArr.eq(0).children('input').eq(1).val();	//数据库id
+			var tblName = tdArr.eq(1).text();		//表名
+			var colName = tdArr.eq(2).text();		//字段名
+			var colDes = tdArr.eq(3).text();		//字段备注
+			var dataType = tdArr.eq(4).text();		//数据类型 0-字符串 1-数值 2-日期
+			var linkName = tdArr.eq(5).children('input').eq(0).val();	//关联字段
+			var formula = tdArr.eq(6).children('input').eq(0).val();	//公式
+			dataType = dataType.replace(/<\/?[^>]*>/g,''); //去除HTML tag
+			dataType = dataType.replace(/[ | ]*\n/g,'\n'); //去除行尾空白
+			dataType = dataType.replace(/\n[\s| | ]*\r/g,'\n'); //去除多余空行
+			dataType = dataType.replace(/ /ig,'');//去掉
+			dataType = dataType.replace(/^[\s　]+|[\s　]+$/g, "");//去掉全角半角空格
+			dataType = dataType.replace(/[\r\n]/g,"");//去掉回车换行
+
+			console.log("dbId:" + dbId + ",tblName:" + tblName + ",colName:" + colName + ",colDes:" + colDes + ",dataType:" + dataType + ",linkName:" + linkName + ",formula:" + formula);
+			if (i == 0) {
+				detailList += '{"dbInfoId":' + dbId + ',"tblName":"' + tblName + '","colName":"' + colName + '","colDepict":"' + colDes + '","dataType":"' + dataType + '","linkCol":"' + linkName + '","formula":"' + formula + '"}';
+			} else {
+				detailList += ',{"dbInfoId":' + dbId + ',"tblName":"' + tblName + '","colName":"' + colName + '","colDepict":"' + colDes + '","dataType":"' + dataType + '","linkCol":"' + linkName + '","formula":"' + formula + '"}';
+			}
+
+			// console.log("dbId:" + dbId + ",tblName:" + tblName + ",colName:" + colName + ",colDes:" + colDes + ",dataType:" + dataType + ",linkName:" + linkName);
+			// if (i == 0) {
+			// 	detailList += '{"dbInfoId":' + dbId + ',"tblName":"' + tblName + '","colName":"' + colName + '","colDepict":"' + colDes + '","dataType":"' + dataType + '","linkCol":"' + linkName + '"}';
+			// } else {
+			// 	detailList += ',{"dbInfoId":' + dbId + ',"tblName":"' + tblName + '","colName":"' + colName + '","colDepict":"' + colDes + '","dataType":"' + dataType + '","linkCol":"' + linkName + '"}';
+			// }
+		}
+
+		detailList += "]}";
+
+		alert(detailList);
+		// // $.operate.save(prefix + "/addSave", {"value1": detailList});
+		//$.operate.save1(prefix + "/add", detailList);
+
+		$.ajax({
+			url: prefix + "/edit",
+			data: detailList,
+			cache: false,
+			contentType: "application/json;charset=UTF-8",
+			dataType:"json",
+			type: 'POST',
+			beforeSend: function () {
+				$.modal.loading("正在处理中，请稍后...");
+				$.modal.disable();
+			},
+			success: function (result) {
+				console.log(result);
+				// $.modal.closeAll();
+				if (result.code == web_status.SUCCESS) {
+					$.modal.closeAll();
+					$.modal.closeLoading();
+					$.modal.alertSuccess(result.msg);
+					$.modal.enable();
+				} else {
+					$.modal.closeAll();
+					$.modal.closeLoading();
+					$.modal.alertError(result.msg);
+					$.modal.enable();
+				}
+			}
+		});
+	}
+
+	function doSubmit(index, layero){
+		var body = layer.getChildFrame('body', index);
+		layer.close(index);
+	}
+
+
+
+	$(document).ready(function () {
+		$.ajax({
+			type:"get",
+			url: "/client/mould/set/dbsource",
+			dataType:'json',
+			success:function (data) {
+				var options = '<option value ="0">请选择</option>';
+				for (var i=0;i<data.rows.length;i++ ){
+					options += '<option value="' + data.rows[i].id + '" >' + data.rows[i].name + '</option>';
+				}
+				$('#name').append(options)
+			}
+		})
+	})
+
+	function changeDatabase() {
+		//获取被选中的option标签
+		// var dbId = $("#name").find("option:selected").text();
+		$('#column').empty();
+		var dbId = jQuery("#name option:selected").val();
+		$("#id").val(dbId);
+		var htmlHead = '';
+		var htmlBody = '';
+		var html = '';
+
+		$.ajax({
+			type:"get",
+			// url: prefix + "/list?id=" + dbId,
+			url: "/client/mould/set/list?id=" + dbId,
+			dataType:'json',
+			success:function (data) {
+				$('#TabName').empty();
+				var options = '<option value ="0">请选择</option>';
+				for (var i=0;i<data.rows.length;i++ ){
+					options += '<option value="' + data.rows[i].name + '" >' + data.rows[i].description + '</option>';
+				}
+				$('#TabName').append(options)
+			}
+		})
+	}
+
+	function changeTable() {
+		//获取被选中的option标签
+		var dbId = jQuery("#TabName option:selected").val();
+		var id = $("#id").val();
+
+		$.ajax({
+			type:"get",
+			url: "/client/mould/set/columns?id=" + id + "&tblName=" + dbId,
+			dataType:'json',
+			success:function (data) {
+				var html = "";
+				for (var i=0;i<data.rows.length;i++ ){
+					html += '<tr>' +
+							'<td align="center" style="width:45px;"><input role="checkbox" type="checkbox" class="cbox checkbox" name="colFrom"></td>' +
+							'<td><input class="form-control" type="text" value="' + data.rows[i].name + '"></td>' +
+							'<td><input class="form-control" type="text" value="' + data.rows[i].description + '"></td>' +
+							'<td><input class="form-control" type="text" value="' + data.rows[i].dtType + '"></td>' +
+							'</tr>';
+				}
+				tbodyFrom.innerHTML = html;
+			}
+		})
+	}
+
+	function checkDbTblCol(dbId, tbleName, colName) {
+		console.log("dbId:" + dbId + ",tbleName:" + tbleName + ",colName:" + colName);
+		var bRet = false;
+		var trList = $("#tbodyTo").children("tr");	//字段列表
+		for (var i=0; i<trList.length; i++) {
+			var tdArr = trList.eq(i).find("td");
+			var dbId1 = tdArr.eq(0).children('input').eq(1).val();	//数据库id
+			var tblName1 = tdArr.eq(1).text();		//表名
+			var colName1 = tdArr.eq(2).text();		//字段名
+			console.log("dbId1:" + dbId1 + ",tbleName1:" + tblName1 + ",colName1:" + colName1);
+			bRet = (dbId1==dbId && tblName1==tbleName && colName1==colName);
+			if(bRet){break;}
+		}
+		return bRet;
+	}
+
+	function checkAll(node){//全选功能的实现
+		var collChkNodes = document.getElementsByName("colFrom");
+		for(var i=1;i<collChkNodes.length;i++){
+			collChkNodes[i].checked =node.checked;
+		}
+	}
+
+	function checkAllByBtn(tblType, num){//全选，反选·全部取消等功能的实现
+		var collChkNodes;
+		if(tblType=='from'){
+			collChkNodes = document.getElementsByName("colFrom");
+		}else{
+			collChkNodes = document.getElementsByName("colTo");
+		}
+		for(var i=0;i<collChkNodes.length;i++){
+			if(num>1){
+				collChkNodes[i].checked = !(collChkNodes[i].checked);//反选功能的实现(状态的转换)
+			}else{
+				collChkNodes[i].checked = num;//0和1表示0和非0，即flase和true
+			}
+		}
+	}
+
+	function addRow2Right(){
+		var dbId = jQuery("#TabName option:selected").val();
+		var id = $("#id").val();
+		var collChkNodes = document.getElementsByName("colFrom");
+		var trList = $("#tbodyFrom").children("tr");
+		//法1：从前往后删，需要把序号回退一下
+		for(var i=0;i<collChkNodes.length;i++){//此处需要遍历移除，所以要先i++然后i--。如果不需要遍历时，则只需要在for中不写i++就行了
+			if(collChkNodes[i].checked){
+				var tdArr = trList.eq(i).find("td");
+				if(checkDbTblCol(id, dbId, tdArr.eq(1).find("input").val())){
+					console.log("dbId2:" + id + ",tbleName2:" + dbId + ",colName2:" + tdArr.eq(1).find("input").val());
+					continue;
+				}
+				var row=document.getElementById("tbodyTo").insertRow(document.getElementById("tbodyTo").rows.length);
+				var rowCount=document.getElementById("tbodyTo").rows.length;
+
+				var countCell=document.getElementById("tbodyTo").rows.item(0).cells.length;
+				var cell=row.insertCell(0);
+				cell.innerHTML='<input role="checkbox" type="checkbox" class="cbox checkbox" name="colTo">' +
+						'<input type="text" value="' + id + '" hidden="hidden">';
+				cell.id=(rowCount)+"/"+(i+1);
+				cell.style.width = "45px";
+				cell.style.border = "1px solid";
+				cell.align = "center";
+				cell=row.insertCell(1);
+				cell.innerHTML=dbId;
+				cell.style.width = "45px";
+				cell.style.border = "1px solid";
+				cell.align = "center";
+				cell=row.insertCell(2);
+				cell.innerHTML=tdArr.eq(1).find("input").val();
+				cell.style.width = "45px";
+				cell.style.border = "1px solid";
+				cell.align = "center";
+				cell=row.insertCell(3);
+				cell.innerHTML=tdArr.eq(2).find("input").val();
+				cell.style.width = "45px";
+				cell.style.border = "1px solid";
+				cell.align = "center";
+				cell=row.insertCell(4);
+				cell.innerHTML=tdArr.eq(3).find("input").val();
+				cell.style.width = "45px";
+				cell.style.border = "1px solid";
+				cell.align = "center";
+				cell=row.insertCell(5);
+				cell.innerHTML='<input type="text" value="" >';
+				cell.style.width = "45px";
+				cell.style.border = "1px solid";
+				cell.align = "center";
+				cell=row.insertCell(6);
+				cell.innerHTML='<input type="text" value="" >';
+				cell.style.width = "45px";
+				cell.style.border = "1px solid";
+				cell.align = "center";
+			}
+		}
+	}
+
+	/*删除行，采用deleteRow(row Index)*/
+	function removeRow(){
+		var collChkNodes = document.getElementsByName("colTo");
+		//法1：从前往后删，需要把序号回退一下
+		for(var i=0;i<collChkNodes.length;i++){//此处需要遍历移除，所以要先i++然后i--。如果不需要遍历时，则只需要在for中不写i++就行了
+			if(collChkNodes[i].checked){
+				var otrNode = collChkNodes[i].parentNode.parentNode;//mail--td--tr
+				otrNode.parentNode.removeChild(otrNode);
+				i--;
+			}
+		}
+	}
+
+	/**
+	 * 增加数据项
+	 */
+	function confirm2(){
+		var dataTypeTxt = $("#dataType").find("option:selected").text();
+		var dataTypeId = $("#dataType").find("option:selected").val();
+		var colDepict = $("#colDepict").val();
+		// var colDepict = document.getElementById("colDepict").value;
+		console.log("dataTypeTxt:" + dataTypeTxt + ",dataTypeId:" + dataTypeId + ",colDepict:" + colDepict);
+		if(dataTypeId=="0"){
+			$.modal.alertWarning("请选择字段类型");
+			return false;
+		}
+		if(colDepict==""){
+			$.modal.alertWarning("请录入字段描述");
+			return false;
+		}
+
+		var row=document.getElementById("tbodyTo").insertRow(document.getElementById("tbodyTo").rows.length);
+		var rowCount=document.getElementById("tbodyTo").rows.length;
+
+		var countCell=document.getElementById("tbodyTo").rows.item(0).cells.length;
+		var cell=row.insertCell(0);
+		cell.innerHTML='<input role="checkbox" type="checkbox" class="cbox checkbox" name="colTo">' +
+				'<input type="text" value="0" hidden="hidden">';
+		// cell.id=(rowCount)+"/"+(i+1);
+		cell.style.width = "45px";
+		cell.style.border = "1px solid";
+		cell.align = "center";
+		cell=row.insertCell(1);
+		cell.innerHTML="";
+		cell.style.width = "45px";
+		cell.style.border = "1px solid";
+		cell.align = "center";
+		cell=row.insertCell(2);
+		cell.innerHTML="";
+		cell.style.width = "45px";
+		cell.style.border = "1px solid";
+		cell.align = "center";
+		cell=row.insertCell(3);
+		cell.innerHTML=colDepict;
+		cell.style.width = "45px";
+		cell.style.border = "1px solid";
+		cell.align = "center";
+		cell=row.insertCell(4);
+		cell.innerHTML=dataTypeId;
+		cell.style.width = "45px";
+		cell.style.border = "1px solid";
+		cell.align = "center";
+		cell=row.insertCell(5);
+		cell.innerHTML='<input type="text" hidden="hidden">';
+		cell.style.width = "45px";
+		cell.style.border = "1px solid";
+		cell.align = "center";
+		cell=row.insertCell(6);
+		cell.innerHTML='<input type="text" value="" >';
+		cell.style.width = "45px";
+		cell.style.border = "1px solid";
+		cell.align = "center";
+		$("#myModal").modal('hide');  //手动关闭
+	}
+</script>
+</body>
+</html>

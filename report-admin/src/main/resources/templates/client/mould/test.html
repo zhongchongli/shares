@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+
+<body onLoad="init();">
+
+<div style="display:inline-block;">
+    <ul class="rpt">
+        <li>模板名称：<input type="text" name="mouldName"/></li>
+        <li>备    注：<input type="text" name="remark"/></li>
+        <li>
+            <table id="from" border="1">
+                <thead>
+                <tr>
+                    <td align="center" style='width:45px;'>
+                        <input id="selectAllFrom" role='checkbox' type='checkbox' class='cbox checkbox'/>
+                    </td>
+                    <td>字段名</td><td>字段描述</td>
+                </tr>
+                </thead>
+                <tbody id="tbodyFrom">
+                <tr>
+                    <td align="center" style="width:45px;" >
+                        <input role="checkbox" type="checkbox" class="cbox checkbox" name="colFrom">
+                    </td>
+                    <td><input type="text" value="chukdh"></td><td><input type="text" value="出库单号"></td>
+                </tr>
+                <tr>
+                    <td align="center" style="width:45px;">
+                        <input role="checkbox" type="checkbox" class="cbox checkbox" name="colFrom">
+                    </td>
+                    <td><input type="text" value="cBusType"></td><td><input type="text" value="销售类型"></td>
+                </tr>
+                <tr>
+                    <td align="center" style="width:45px;">
+                        <input role="checkbox" type="checkbox" class="cbox checkbox" name="colFrom">
+                    </td>
+                    <td><input type="text" value="danjly"></td><td><input type="text" value="单据来源"></td>
+                </tr>
+                <tr>
+                    <td align="center" style="width:45px;">
+                        <input role="checkbox" type="checkbox" class="cbox checkbox" name="colFrom">
+                    </td>
+                    <td><input type="text" value="fahdh"></td><td><input type="text" value="发货单号"></td>
+                </tr>
+                <tr>
+                    <td align="center" style="width:45px;">
+                        <input role="checkbox" type="checkbox" class="cbox checkbox" name="colFrom">
+                    </td>
+                    <td><input type="text" value="cCusName"></td><td><input type="text" value="客户名称"></td>
+                </tr>
+                </tbody>
+            </table>
+        </li>
+    </ul>
+</div>
+
+<div style="display:inline-block;margin-left:10px;">
+    <ul class="rpt">
+        <li>模板名称：<input type="text" name="mouldName"/></li>
+        <li>备    注：<input type="text" name="remark"/></li>
+        <li>
+            <table id="to" border="1">
+                <thead>
+                <tr>
+                    <td align="center" style='width:45px;'><input id="selectAllTo" role='checkbox' type='checkbox' class='cbox checkbox'/></td>
+                    <td>表单</td><td>字段名</td><td>字段描述</td><td>关联项</td>
+                </tr>
+                </thead>
+                <tbody id="tbodyTo">
+                    <tr>
+                        <td align="center" style="width:45px;" >
+                            <input role="checkbox" type="checkbox" class="cbox checkbox" name="colTo">
+                        </td>
+                        <td>V_fhdwlhz</td><td>chukdh</td><td>出库单号</td><td></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="width:35px;">
+                            <input role="checkbox" type="checkbox" class="cbox checkbox" name="colTo">
+                        </td>
+                        <td>V_fhdwlhz</td><td>cBusType</td><td>销售类型</td><td></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="width:35px;">
+                            <input role="checkbox" type="checkbox" class="cbox checkbox" name="colTo">
+                        </td>
+                        <td>V_fhdwlhz</td><td>fahdh</td><td>发货单号</td><td></td>
+                    </tr>
+                    <tr>
+                        <td align="center" style="width:35px;">
+                            <input role="checkbox" type="checkbox" class="cbox checkbox" name="colTo">
+                        </td>
+                        <td>V_fhdwlhz</td><td>cCusName</td><td>客户名称</td><td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </li>
+    </ul>
+</div>
+
+<table  id="table" align="center">
+    <tbody id="newbody"></tbody>
+
+</table>
+<div>
+    <table width="800px" border="1px" align="center">
+        <tr><td align="center"><input type="button" id="addRow" name="addRow" onClick="addRow();" value="添加行"/></td><td align="center"><input type="button" id="delRow" name="delRow" onClick="removeRow();" value="删除行"/></td></tr>
+        　　<tr><td align="center"><input type="button" id="delCell"　name="delCell"  onClick="removeCell();" value="删除列"/></td><td align="center"><input type="button"　id="addCell" name="addCell" onClick=" addCell();" value="添加列"/></td></tr>
+        　<tr><td align="center" colspan="2"><input type="button" id="addRows"　name="addRows"  onClick="addRow_withInsert();" value="添加行"/></td></tr>
+    </table>
+</div>
+<div>
+    <table width="800px" border="1px" align="center">
+        <tr><td>从第<input type="text" id="beginRow" name="beginRow"  value=""/>行到<input type="text"  name="endRow"  id="endRow" value=""/>行</td><td rowspan="2"  id="test"><input type="button" name="hebing" id="hebing" value="合并" onClick="rebulid();"/></td></tr>
+        　　<tr><td>从第<input type="text" name="beginCol" id="beginCol" value=""/>列到<input type="text" name="endCol" id="endCol" value=""/>列</td></tr>
+    </table>
+</div>
+
+<script src="../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script language="javascript">
+    /*生成表格，采用appendChild*/
+    function init(){
+        _table=document.getElementById("table");
+        _table.border="1px";
+        _table.width="800px";
+
+        for(var i=1;i<10;i++){
+            var row=document.createElement("tr");
+            row.id=i;
+            for(var j=1;j<6;j++){
+                var cell=document.createElement("td");
+                cell.id=i+"/"+j;
+                cell.appendChild(document.createTextNode("第"+cell.id+"列"));
+                row.appendChild(cell);
+            }
+            document.getElementById("newbody").appendChild(row);
+        }
+    }
+
+    function moveRight() {
+
+    }
+    function moveLeft() {
+        var checkboxs = $("#tbodyTo").find("input[type='checkbox']");
+        var isChecked = $(this).is(":checked");
+        //严禁使用foreach，jq对象的遍历会使浏览器崩溃
+        // for(var i = 0; i < checkboxs.length; i++) {
+        //     var temp = i;
+        //     $(checkboxs[temp]).prop("checked", isChecked);
+        // }
+        for(var i = checkboxs.length; i > 0; i--) {
+            //临时变量，必须，否则只能选中最后一条记录
+            var temp = i;
+            var ischecked = $(checkboxs[temp]).prop("checked");
+            console.log("checked[" + i + "]" + ischecked);
+        }
+
+        // var Tabobj = $("#Tab");
+        // var Check = $("table input[type=checkbox]:checked");//在table中找input下类型为checkbox属性为选中状态的数据
+        // Check.each(function () {//遍历
+        //     var row = $(this).parent("td").parent("tr");//获取选中行
+        //     var id = row.find("[name='Sid']").html();//获取name='Sid'的值
+        //     var sname = row.find("[name='Sname']").html();
+        // })
+        //
+        //
+        // var Tabobj = $("#Tab");
+        // var Check = $("table input[type=checkbox]:checked");//在table中找input下类型为checkbox属性为选中状态的数据
+        // Check.each(function () {//遍历
+        //     var row = $(this).parent("td").parent("tr");//获取选中行
+        //     var id = row.find("[name='Sid']").html();//获取name='Sid'的值
+        //     var sname = row.find("[name='Sname']").html();
+        // })
+    }
+    function rebulid(){
+        var beginRow=document.getElementById("beginRow").value;/*开始行*/
+        var endRow=document.getElementById("endRow").value;/*结束行*/
+
+        var beginCol=document.getElementById("beginCol").value;/*开始列*/
+        var endCol=document.getElementById("endCol").value;/*结束列*/
+
+        var tempCol=beginRow+"/"+beginCol;/*定位要改变属性的列*/
+        alert(tempCol);
+        var td=document.getElementById(tempCol);
+
+        /*删除要合并的单元格*/
+        for(var x=beginRow;x<=endRow;x++){
+            for(var i=beginCol;i<=endCol;i++){
+                if(x==beginRow){
+
+                    document.getElementById("table").rows[x].deleteCell(i+1);
+
+                }
+                else{
+
+                    document.getElementById("table").rows[x].deleteCell(i);
+
+                }
+
+            }
+        }
+        td.rowSpan=(endRow-beginRow)+1;
+    }
+    /*添加行，使用appendChild方法*/
+    function addRow(){
+        var length=document.getElementById("to").rows.length;
+        /*document.getElementById("newbody").insertRow(length);
+        document.getElementById(length+1).setAttribute("id",length+2);*/
+        var tr=document.createElement("tr");
+        tr.id=length+1;
+        var td=document.createElement("td");
+        for(i=1;i<4;i++){
+            td.id=tr.id+"/"+i;
+            td.appendChild(document.createTextNode("第"+td.id+"列"));
+            tr.appendChild(td);
+
+        }
+        document.getElementById("tbodyTo").appendChild(tr);
+    }
+
+    function addRow_withInsert(){
+        var collMailChkNodes = document.getElementsByName("colFrom");
+        var trList = $("#tbodyFrom").children("tr");
+        //法1：从前往后删，需要把序号回退一下
+        for(var i=0;i<collMailChkNodes.length;i++){//此处需要遍历移除，所以要先i++然后i--。如果不需要遍历时，则只需要在for中不写i++就行了
+            if(collMailChkNodes[i].checked){
+                var tdArr = trList.eq(i).find("td");
+                console.log(tdArr.eq(1).find("input").val());
+                console.log(tdArr.eq(2).find("input").val());
+                var otrNode = collMailChkNodes[i].parentNode.parentNode;//mail--td--tr
+                //otrNode.parentNode.removeChild(otrNode);
+                // console.log(otrNode.childNodes.cells.item(1).getElementsByTagName_r('input')[0].value);
+                // console.log(otrNode.childNodes.cells.item(2).getElementsByTagName_r('input')[0].value);
+
+                var row=document.getElementById("to").insertRow(document.getElementById("to").rows.length);
+                var rowCount=document.getElementById("to").rows.length;
+
+                var countCell=document.getElementById("to").rows.item(0).cells.length;
+                var cell=row.insertCell(0);
+                cell.innerHTML='<input role="checkbox" type="checkbox" class="cbox checkbox" name="colTo">';
+                cell.id=(rowCount)+"/"+(i+1);
+                cell.style.width = "45px;";
+                cell.align = "center";
+                cell=row.insertCell(1);
+                cell.innerHTML="V_fhdwlhz";
+                cell.style.width = "45px;";
+                cell.align = "center";
+                cell=row.insertCell(2);
+                cell.innerHTML=tdArr.eq(1).find("input").val();
+                cell.style.width = "45px;";
+                cell.align = "center";
+                cell=row.insertCell(3);
+                cell.innerHTML=tdArr.eq(2).find("input").val();
+                cell.style.width = "45px;";
+                cell.align = "center";
+                cell=row.insertCell(4);
+                cell.innerHTML='<input type="text" value="" >';
+                cell.style.width = "45px;";
+                cell.align = "center";
+
+                // for(var i=0; i<countCell; i++){
+                //     var cell=row.insertCell(i);
+                //
+                //     cell.innerHTML="新"+(rowCount)+"/"+(i+1)+"列";
+                //     cell.id=(rowCount)+"/"+(i+1);
+                //
+                //     // <tr>
+                //     //     <td align="center" style="width:45px;" >
+                //     //         <input role="checkbox" type="checkbox" class="cbox checkbox" name="colTo">
+                //     //     </td>
+                //     //     <td>V_fhdwlhz</td><td>chukdh</td><td>出库单号</td><td></td>
+                //     // </tr>
+                // }
+            }
+        }
+
+        // var history_income_type = tdArr.eq(0).find("input").val();//收入类别
+        // var history_income_money = tdArr.eq(1).find("input").val();//收入金额
+        // var history_income_remark = tdArr.eq(2).find("input").val();//    备注
+    }
+
+    /*删除行，采用deleteRow(row Index)*/
+    function removeRow(){
+        // var row=document.getElementById(document.getElementById("to").rows.length);
+        // var index=row.rowIndex - 1 ;
+        // console.log("index:" + index);
+        // document.getElementById("tbodyTo").deleteRow(document.getElementById(document.getElementById("table").rows.length).rowIndex);
+
+
+
+        var collMailChkNodes = document.getElementsByName("colTo");
+        //法1：从前往后删，需要把序号回退一下
+        for(var i=0;i<collMailChkNodes.length;i++){//此处需要遍历移除，所以要先i++然后i--。如果不需要遍历时，则只需要在for中不写i++就行了
+            if(collMailChkNodes[i].checked){
+                var otrNode = collMailChkNodes[i].parentNode.parentNode;//mail--td--tr
+                otrNode.parentNode.removeChild(otrNode);
+                i--;
+            }
+        }
+    }
+
+    /*添加列，采用insertCell(列位置)方法*/
+    function addCell(){
+        /*document.getElementById("table").rows.item(0).cells.length
+         用来获得表格的列数
+        */
+        for(var i=0;i<document.getElementById("table").rows.length;i++){
+            var cell=document.getElementById("table").rows[i].insertCell(2);
+            cell.innerHTML="第"+(i+1)+"/"+3+"列";
+
+        }
+    }
+    /*删除列，采用deleteCell(列位置)的方法*/
+    function removeCell(){
+        for(var i=0;i<document.getElementById("table").rows.length;i++){
+            document.getElementById("table").rows[i].deleteCell(0);
+        }
+    }
+</script>
+</body>
+</html>

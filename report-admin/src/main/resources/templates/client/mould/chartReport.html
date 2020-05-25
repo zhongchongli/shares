@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<style type="text/css">
+	textarea{
+		border: 2px;  //可根据需要修改有无边框显示长度和宽带
+	overflow: auto;
+		height: 100%;
+		width: 100%
+	}
+	input{
+		width: 100%;
+		height: 100%;
+		display: block;
+		border: 2px;
+		margin:0;
+		padding:0;
+	}
+	.changed{
+		background:#cccccc;
+		padding:0px 0px 0px 0px;
+		margin:1px;
+		border:1px solid #f4ede6;
+		position: static;
+		bottom:0px;
+		line-height:20px;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+
+    <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="mould-form">
+					<input id="mouldId" name="mouldId" th:value="${mouldId}" type="hidden">
+					<div class="select-list">
+						<ul>
+							<li>
+								模板名称：<input type="text" name="name"/>
+							</li>
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+                
+            <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+		        <a class="btn btn-success" data-toggle="modal" data-target="#myModal" >
+                    <i class="fa fa-plus"></i> 新增
+                </a>
+<!--                <a class="btn btn-primary" onclick="$.operate.editTree()" shiro:hasPermission="client:datasource:edit">-->
+<!--		            <i class="fa fa-edit"></i> 修改-->
+<!--		        </a>-->
+	        </div>
+            <div class="col-sm-12 select-table table-striped">
+	            <table id="bootstrap-tree-table" data-mobile-responsive="true"></table>
+	        </div>
+	    </div>
+	</div>
+	
+	<div th:include="include :: footer"></div>
+
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content" style="width: 800px; height: 500px;">
+				<div class="modal-body" style="width: 100%; height: 85%;">
+					<table class="table" style="width: 100%; height: 100%;">
+						<thead>
+						<tr>
+							<td width="5%" >模板名称：</td>
+							<td width="12%" colspan="2" >
+								<div class="col-sm-8 changed">
+									<input id="mouldName" name="mouldName" th:value="${mouldName}" >
+								</div>
+							</td>
+							<td width="5%" >图表模板名称：</td>
+							<td width="12%" colspan="2" >
+								<div class="col-sm-8 changed">
+									<input id="name" name="name" >
+								</div>
+							</td>
+						</tr>
+						<tr style="border: none">
+							<td width="5%" >图表类别：</td>
+							<td width="12%" >
+								<div class="col-sm-8 changed">
+									<select id="chartType" name="chartType" class="form-control" type="text" style="width: 100%; height: 100%" >
+										<option value="0" >请选择图表类别</option>
+										<option value="1" >走势图</option>
+										<option value="2" >同比环比</option>
+										<option value="3" >分布图</option>
+									</select>
+								</div>
+							</td>
+							<td width="5%" >分析对象：</td>
+							<td width="12%">
+								<div class="col-sm-8 changed">
+									<select id="dzObjName" name="dzObjName" class="form-control" type="text" style="width: 100%; height: 100%" >
+
+									</select>
+								</div>
+							</td>
+							<td width="5%" >统计项：</td>
+							<td width="12%">
+								<div class="col-sm-8 changed">
+									<!-- 列出数据项供选择（float类型） -->
+									<select id="dzData" name="dzData" class="form-control" type="text" style="width: 100%; height: 100%" >
+
+									</select>
+								</div>
+							</td>
+						</tr>
+
+						<tr>
+							<td width="5%" >时间段：</td>
+							<td width="12%" colspan="2">
+								<div class="col-sm-8 changed">
+									<select id="dzPeriodCol" name="dzPeriodCol" class="form-control" type="text" style="width: 100%; height: 100%" >
+									</select>
+								</div>
+							</td>
+							<td width="5%" >分析周期：</td>
+							<td width="12%" colspan="2" >
+								<div class="col-sm-8 changed">
+									<select id="dzPeriod" name="dzPeriod" class="form-control" type="text" style="width: 100%; height: 100%">
+										<option value="0" >天</option>
+										<option value="1" >周</option>
+										<option value="2" selected="selected">月</option>
+										<option value="3" >季</option>
+										<option value="4" >年</option>
+									</select>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td width="5%" >备注：</td>
+							<td width="12%" colspan="5">
+<!--								<label class="col-sm-3 control-label">备注：</label>-->
+								<div class="col-sm-8">
+									<textarea id="remark" name="remark" class="form-control"></textarea>
+								</div>
+							</td>
+						</tr>
+						</thead>
+
+					</table>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-primary" onclick="myConfirm()">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+		var addFlag = [[${@permission.hasPermi('client:mould:add')}]];
+		var editFlag = [[${@permission.hasPermi('client:mould:edit')}]];
+		var removeFlag = [[${@permission.hasPermi('client:mould:remove')}]];
+		var datas = [[${@dict.getType('sys_show_hide')}]];
+		var prefix = ctx + "client/dzReportMould";
+
+		$(function() {
+		    var options = {
+		        url: prefix + "/listChartMould",
+		        createUrl: prefix + "/add/{id}",
+		        updateUrl: prefix + "/edit/{id}",
+		        removeUrl: prefix + "/remove/{id}",
+		        modalName: "报表模板",
+		        columns: [
+					{
+						checkbox: true
+					},
+					{
+						field: 'mouldName',
+						title: '模板名称',
+						width: '10%',
+						align: "center",
+						formatter: function(value, row, index) {
+							if ($.common.isEmpty(row.icon)) {
+								return row.mouldName;
+							} else {
+								return '<i class="' + row.icon + '"></i> <span class="nav-label">' + row.mouldName + '</span>';
+							}
+						}
+					},
+					 {
+						title: '图表模板名称',
+						field: 'name',
+						width: '20%',
+						formatter: function(value, row, index) {
+							if ($.common.isEmpty(row.icon)) {
+								return row.name;
+							} else {
+								return '<i class="' + row.icon + '"></i> <span class="nav-label">' + row.mouldName + '</span>';
+							}
+						}
+					},
+					{
+						field: 'remark',
+						title: '备注',
+						width: '10%',
+						align: "center"
+					},
+					{
+						//1 趋势图 2 同比环比 3 分布图
+						title: '图表分类',
+						field: 'chartType',
+						width: '15%',
+						align: "left",
+						align: "center",
+						formatter: function(value, item, index) {
+							if (item.chartType == '1') {
+								return '<span class="label label-success">趋势图</span>';
+							}
+							else if (item.chartType == '2') {
+								return '<span class="label label-primary">同比环比</span>';
+							}
+							else if (item.chartType == '3') {
+								return '<span class="label label-warning">分布图</span>';
+							}
+						}
+					},
+					{
+						title: '报表分析对象',
+						field: 'dzObjName',
+						width: '10%',
+						align: "center"
+					},
+					{
+						//0 天、1 周、2 月、3 季、4 年
+						title: '报表分析周期',
+						field: 'dzPeriod',
+						width: '15%',
+						align: "left",
+						align: "center",
+						formatter: function(value, item, index) {
+							if (item.chartType == '0') {
+								return '<span class="label label-success">天</span>';
+							}else if (item.chartType == '1') {
+								return '<span class="label label-success">周</span>';
+							}
+							else if (item.chartType == '2') {
+								return '<span class="label label-primary">月</span>';
+							}
+							else if (item.chartType == '3') {
+								return '<span class="label label-warning">季</span>';
+							}
+							else if (item.chartType == '4') {
+								return '<span class="label label-warning">年</span>';
+							}
+						}
+					},
+					{
+						title: '创建者id',
+						field: 'createBy',
+						width: '10%',
+						align: "center"
+					},
+					{
+						field: 'createTime',
+						title: '创建时间',
+						width: '10%',
+						align: "center"
+					},
+					{
+						title: '操作',
+						width: '20%',
+						field: 'status',
+						align: "center",
+						formatter: function(value, row, index) {
+							var actions = [];
+							if (value == "0") {
+								actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit1(\'' + row.id + '\')"><i class="fa fa-edit"></i>修改</a> ');
+								// actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="editDataItem(\'' + row.id + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+								actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+								actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="commitMould(\'' + row.id + '\')"><i class="fa fa-arrow-circle-o-up"></i>提交</a>');
+							}else{
+								actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="chartReport(\'' + row.id + '\')"><i class="fa fa-bar-chart"></i>查看</a> ');
+							}
+							return actions.join('');
+						}
+					}
+				]
+		    };
+		    $.treeTable.init(options);
+			initColumnList();
+		});
+
+		//
+		function initColumnList() {
+			//获取被选中的option标签
+			// var dbId = jQuery("#TabName option:selected").val();
+			var mouldId = $("#mouldId").val();
+			var detailList = '{"id":' + mouldId + '}';
+			$.ajax({
+				contentType: "application/json;charset=UTF-8",
+				type:"POST",
+				url: "/client/report/getRptTitle",
+				dataType:'json',
+				cache: false,
+				data: detailList,
+				json: 'callback',
+				success:function (json) {
+					console.log("jsonTitle:" + JSON.stringify(json));
+					//for (var i = 0; i < json.datas.length; i++) {//循环所有的项目
+					var options = '<option value ="0">请选择</option>';
+					var options1 = '<option value ="0">请选择</option>';
+					var options2 = '<option value ="0">请选择</option>';
+					for (var i=0;i<json.datas.length;i++ ){
+						options += '<option value="' + json.datas[i].dzColName + '" >' + json.datas[i].colDepict + '</option>';
+						if(json.datas[i].dataType==2){
+							options1 += '<option value="' + json.datas[i].dzColName + '" >' + json.datas[i].colDepict + '</option>';
+						}else{
+							if(json.datas[i].dataType==1) {
+								options2 += '<option value="' + json.datas[i].dzColName + '" >' + json.datas[i].colDepict + '</option>';
+							}
+						}
+					}
+					$('#dzObjName').append(options);
+					$('#dzPeriodCol').append(options1);
+					$('#dzData').append(options2);
+
+				}
+			})
+		}
+
+		function editDataItem(id) {
+			// var url = ctx + "client/dzReportMould/editMould/" + id;
+			var url = ctx + "client/dzReportMould/editMould/" + id;
+			console.log("url:" + url);
+			$.modal.open("编辑模板", url, 1400, 700);
+		}
+		
+		function remove(id) {
+			$.modal.confirm("确定删除该模板吗？", function() {
+				$.ajax({
+					type : 'post',
+					url: prefix + "/remove/" + id,
+					success : function(result) {
+						if (result.code == web_status.SUCCESS) {
+		                	$.modal.msgSuccess(result.msg);
+		                	$.treeTable.refresh();
+		                } else {
+		                	$.modal.msgError(result.msg);
+		                }
+					}
+				});
+			});
+		}
+
+		/**
+		 * 提交模板
+		 */
+		function commitMould(id){
+			$.modal.confirm("确定提交该模板吗？", function() {
+				$.ajax({
+					type : 'post',
+					url: prefix + "/commit/" + id,
+					success : function(result) {
+						if (result.code == web_status.SUCCESS) {
+							$.modal.msgSuccess(result.msg);
+							$.treeTable.refresh();
+						} else {
+							$.modal.msgError(result.msg);
+						}
+					}
+				});
+			});
+		}
+
+		function myConfirm(){
+			// var chartType = document.getElementById("chartType").value;
+			// var url = ctx + "client/dzReportMould/chartReport/" + chartType;
+			// console.log("url:" + url);
+			// $.modal.open("编辑图形模板", url, 1400, 700);
+			var chartType = $("#chartType").find("option:selected").text();
+			var chartType1 = $("#chartType").find("option:selected").val();
+			console.log("chartType:" + chartType + ",chartType1:" + chartType1);
+
+			var dzObjName = $("#dzObjName").find("option:selected").text();
+			var dzObjName1 = $("#dzObjName").find("option:selected").val();
+			console.log("dzObjName:" + dzObjName + ",dzObjName1:" + dzObjName1);
+
+			var dzPeriodCol = $("#dzPeriodCol").find("option:selected").text();
+			var dzPeriodCol1 = $("#dzPeriodCol").find("option:selected").val();
+			console.log("dzPeriodCol:" + dzPeriodCol + ",dzPeriodCol1:" + dzPeriodCol1);
+
+			var dzPeriod = $("#dzPeriod").find("option:selected").text();
+			var dzPeriod1 = $("#dzPeriod").find("option:selected").val();
+			console.log("dzPeriod:" + dzPeriod + ",dzPeriod1:" + dzPeriod1);
+
+			var mouldId = $("#mouldId").val();
+			var mouldName = $("#mouldName").val();
+			var name = $("#name").val();
+			var remark = $("#remark").val();
+			console.log("mouldId:" + mouldId + ",mouldName:" + mouldName + ",name:" + name + ",remark:" + remark);
+
+			var detailList = '{"mouldId":' + mouldId + ',"mouldName":"' + mouldName + '","name":"' + name + '","remark":"' + remark +
+					'","chartType":"' + chartType1 + '","dzObjName":"' + dzObjName1 + '","dzPeriodCol":"' + dzPeriodCol1 + '","dzPeriod":"' + dzPeriod1 + '"}';
+			console.log("detailList:" + detailList);
+
+			if(chartType1=="0"){
+				$.modal.alertWarning("请选择图表类别");
+				return false;
+			}
+			if(dzObjName1==""){
+				$.modal.alertWarning("请选择分析对象");
+				return false;
+			}
+			if(dzPeriodCol1==""){
+				$.modal.alertWarning("请选择时间段");
+				return false;
+			}
+
+			$.ajax({
+				url: ctx + "client/charts/add",
+				data: detailList,
+				cache: false,
+				contentType: "application/json;charset=UTF-8",
+				dataType:"json",
+				type: 'POST',
+				beforeSend: function () {
+					$.modal.loading("正在处理中，请稍后...");
+					$.modal.disable();
+				},
+				success: function (result) {
+					console.log(result);
+					// $.modal.closeAll();
+					if (result.code == web_status.SUCCESS) {
+						$.modal.closeAll();
+						$.modal.closeLoading();
+						$.modal.alertSuccess(result.msg);
+						$.modal.enable();
+                        $("#myModal").modal('hide');  //手动关闭
+					} else {
+						$.modal.closeAll();
+						$.modal.closeLoading();
+						$.modal.alertError(result.msg);
+						$.modal.enable();
+					}
+				}
+			});
+		}
+
+		/**
+		 * 设置图形报表
+		 */
+		function chartReport(id) {
+			// var url = ctx + "client/dzReportMould/editMould/" + id;
+			// console.log("url:" + url);
+			// $.modal.open("编辑模板", url, 1400, 700);
+			alert("该页面正在开发中，请稍后再试。");
+		}
+	</script>
+</body>
+</html>

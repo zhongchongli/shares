@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dongzhe.system.mapper.client.BusDailyMapper">
+  <resultMap id="BaseResultMap" type="com.dongzhe.project.pojo.BusDailyDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="share_id" jdbcType="BIGINT" property="shareId" />
+    <result column="code" jdbcType="CHAR" property="code" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="start_price" jdbcType="DECIMAL" property="startPrice" />
+    <result column="stop_price" jdbcType="DECIMAL" property="stopPrice" />
+    <result column="max_price" jdbcType="DECIMAL" property="maxPrice" />
+    <result column="min_price" jdbcType="DECIMAL" property="minPrice" />
+    <result column="buy1" jdbcType="DECIMAL" property="buy1" />
+    <result column="sell1" jdbcType="DECIMAL" property="sell1" />
+    <result column="deal_count" jdbcType="INTEGER" property="dealCount" />
+    <result column="deal_money" jdbcType="DECIMAL" property="dealMoney" />
+    <result column="buy1_count" jdbcType="INTEGER" property="buy1Count" />
+    <result column="buy1_price" jdbcType="DECIMAL" property="buy1Price" />
+    <result column="buy2_count" jdbcType="INTEGER" property="buy2Count" />
+    <result column="buy2_price" jdbcType="DECIMAL" property="buy2Price" />
+    <result column="buy3_count" jdbcType="INTEGER" property="buy3Count" />
+    <result column="buy3_price" jdbcType="DECIMAL" property="buy3Price" />
+    <result column="buy4_count" jdbcType="INTEGER" property="buy4Count" />
+    <result column="buy4_price" jdbcType="DECIMAL" property="buy4Price" />
+    <result column="buy5_count" jdbcType="INTEGER" property="buy5Count" />
+    <result column="buy5_price" jdbcType="DECIMAL" property="buy5Price" />
+    <result column="sell1_count" jdbcType="INTEGER" property="sell1Count" />
+    <result column="sell1_price" jdbcType="DECIMAL" property="sell1Price" />
+    <result column="sell2_count" jdbcType="INTEGER" property="sell2Count" />
+    <result column="sell2_price" jdbcType="DECIMAL" property="sell2Price" />
+    <result column="sell3_count" jdbcType="INTEGER" property="sell3Count" />
+    <result column="sell3_price" jdbcType="DECIMAL" property="sell3Price" />
+    <result column="sell4_count" jdbcType="INTEGER" property="sell4Count" />
+    <result column="sell4_price" jdbcType="DECIMAL" property="sell4Price" />
+    <result column="sell5_count" jdbcType="INTEGER" property="sell5Count" />
+    <result column="sell5_price" jdbcType="DECIMAL" property="sell5Price" />
+    <result column="deal_day" jdbcType="DATE" property="dealDay" />
+    <result column="deal_time" jdbcType="TIME" property="dealTime" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, share_id, code, name, start_price, stop_price, max_price, min_price, buy1, sell1, 
+    deal_count, deal_money, buy1_count, buy1_price, buy2_count, buy2_price, buy3_count, 
+    buy3_price, buy4_count, buy4_price, buy5_count, buy5_price, sell1_count, sell1_price, 
+    sell2_count, sell2_price, sell3_count, sell3_price, sell4_count, sell4_price, sell5_count, 
+    sell5_price, deal_day, deal_time
+  </sql>
+  <select id="selectByExample" parameterType="com.dongzhe.project.pojo.BusDailyExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from bus_daily
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    <if test="limit != null">
+      <if test="offset != null">
+        limit ${offset}, ${limit}
+      </if>
+      <if test="offset == null">
+        limit ${limit}
+      </if>
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from bus_daily
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from bus_daily
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.dongzhe.project.pojo.BusDailyExample">
+    delete from bus_daily
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insertSelective" parameterType="com.dongzhe.project.pojo.BusDailyDO">
+    insert into bus_daily
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="shareId != null">
+        share_id,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="startPrice != null">
+        start_price,
+      </if>
+      <if test="stopPrice != null">
+        stop_price,
+      </if>
+      <if test="maxPrice != null">
+        max_price,
+      </if>
+      <if test="minPrice != null">
+        min_price,
+      </if>
+      <if test="buy1 != null">
+        buy1,
+      </if>
+      <if test="sell1 != null">
+        sell1,
+      </if>
+      <if test="dealCount != null">
+        deal_count,
+      </if>
+      <if test="dealMoney != null">
+        deal_money,
+      </if>
+      <if test="buy1Count != null">
+        buy1_count,
+      </if>
+      <if test="buy1Price != null">
+        buy1_price,
+      </if>
+      <if test="buy2Count != null">
+        buy2_count,
+      </if>
+      <if test="buy2Price != null">
+        buy2_price,
+      </if>
+      <if test="buy3Count != null">
+        buy3_count,
+      </if>
+      <if test="buy3Price != null">
+        buy3_price,
+      </if>
+      <if test="buy4Count != null">
+        buy4_count,
+      </if>
+      <if test="buy4Price != null">
+        buy4_price,
+      </if>
+      <if test="buy5Count != null">
+        buy5_count,
+      </if>
+      <if test="buy5Price != null">
+        buy5_price,
+      </if>
+      <if test="sell1Count != null">
+        sell1_count,
+      </if>
+      <if test="sell1Price != null">
+        sell1_price,
+      </if>
+      <if test="sell2Count != null">
+        sell2_count,
+      </if>
+      <if test="sell2Price != null">
+        sell2_price,
+      </if>
+      <if test="sell3Count != null">
+        sell3_count,
+      </if>
+      <if test="sell3Price != null">
+        sell3_price,
+      </if>
+      <if test="sell4Count != null">
+        sell4_count,
+      </if>
+      <if test="sell4Price != null">
+        sell4_price,
+      </if>
+      <if test="sell5Count != null">
+        sell5_count,
+      </if>
+      <if test="sell5Price != null">
+        sell5_price,
+      </if>
+      <if test="dealDay != null">
+        deal_day,
+      </if>
+      <if test="dealTime != null">
+        deal_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="shareId != null">
+        #{shareId,jdbcType=BIGINT},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=CHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="startPrice != null">
+        #{startPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="stopPrice != null">
+        #{stopPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="maxPrice != null">
+        #{maxPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="minPrice != null">
+        #{minPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="buy1 != null">
+        #{buy1,jdbcType=DECIMAL},
+      </if>
+      <if test="sell1 != null">
+        #{sell1,jdbcType=DECIMAL},
+      </if>
+      <if test="dealCount != null">
+        #{dealCount,jdbcType=INTEGER},
+      </if>
+      <if test="dealMoney != null">
+        #{dealMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="buy1Count != null">
+        #{buy1Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy1Price != null">
+        #{buy1Price,jdbcType=DECIMAL},
+      </if>
+      <if test="buy2Count != null">
+        #{buy2Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy2Price != null">
+        #{buy2Price,jdbcType=DECIMAL},
+      </if>
+      <if test="buy3Count != null">
+        #{buy3Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy3Price != null">
+        #{buy3Price,jdbcType=DECIMAL},
+      </if>
+      <if test="buy4Count != null">
+        #{buy4Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy4Price != null">
+        #{buy4Price,jdbcType=DECIMAL},
+      </if>
+      <if test="buy5Count != null">
+        #{buy5Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy5Price != null">
+        #{buy5Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell1Count != null">
+        #{sell1Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell1Price != null">
+        #{sell1Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell2Count != null">
+        #{sell2Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell2Price != null">
+        #{sell2Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell3Count != null">
+        #{sell3Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell3Price != null">
+        #{sell3Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell4Count != null">
+        #{sell4Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell4Price != null">
+        #{sell4Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell5Count != null">
+        #{sell5Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell5Price != null">
+        #{sell5Price,jdbcType=DECIMAL},
+      </if>
+      <if test="dealDay != null">
+        #{dealDay,jdbcType=DATE},
+      </if>
+      <if test="dealTime != null">
+        #{dealTime,jdbcType=TIME},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.dongzhe.project.pojo.BusDailyExample" resultType="java.lang.Long">
+    select count(*) from bus_daily
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+
+  <update id="updateByPrimaryKeySelective" parameterType="com.dongzhe.project.pojo.BusDailyDO">
+    update bus_daily
+    <set>
+      <if test="shareId != null">
+        share_id = #{shareId,jdbcType=BIGINT},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=CHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="startPrice != null">
+        start_price = #{startPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="stopPrice != null">
+        stop_price = #{stopPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="maxPrice != null">
+        max_price = #{maxPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="minPrice != null">
+        min_price = #{minPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="buy1 != null">
+        buy1 = #{buy1,jdbcType=DECIMAL},
+      </if>
+      <if test="sell1 != null">
+        sell1 = #{sell1,jdbcType=DECIMAL},
+      </if>
+      <if test="dealCount != null">
+        deal_count = #{dealCount,jdbcType=INTEGER},
+      </if>
+      <if test="dealMoney != null">
+        deal_money = #{dealMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="buy1Count != null">
+        buy1_count = #{buy1Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy1Price != null">
+        buy1_price = #{buy1Price,jdbcType=DECIMAL},
+      </if>
+      <if test="buy2Count != null">
+        buy2_count = #{buy2Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy2Price != null">
+        buy2_price = #{buy2Price,jdbcType=DECIMAL},
+      </if>
+      <if test="buy3Count != null">
+        buy3_count = #{buy3Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy3Price != null">
+        buy3_price = #{buy3Price,jdbcType=DECIMAL},
+      </if>
+      <if test="buy4Count != null">
+        buy4_count = #{buy4Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy4Price != null">
+        buy4_price = #{buy4Price,jdbcType=DECIMAL},
+      </if>
+      <if test="buy5Count != null">
+        buy5_count = #{buy5Count,jdbcType=INTEGER},
+      </if>
+      <if test="buy5Price != null">
+        buy5_price = #{buy5Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell1Count != null">
+        sell1_count = #{sell1Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell1Price != null">
+        sell1_price = #{sell1Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell2Count != null">
+        sell2_count = #{sell2Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell2Price != null">
+        sell2_price = #{sell2Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell3Count != null">
+        sell3_count = #{sell3Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell3Price != null">
+        sell3_price = #{sell3Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell4Count != null">
+        sell4_count = #{sell4Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell4Price != null">
+        sell4_price = #{sell4Price,jdbcType=DECIMAL},
+      </if>
+      <if test="sell5Count != null">
+        sell5_count = #{sell5Count,jdbcType=INTEGER},
+      </if>
+      <if test="sell5Price != null">
+        sell5_price = #{sell5Price,jdbcType=DECIMAL},
+      </if>
+      <if test="dealDay != null">
+        deal_day = #{dealDay,jdbcType=DATE},
+      </if>
+      <if test="dealTime != null">
+        deal_time = #{dealTime,jdbcType=TIME},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+</mapper>

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+
+<body class="gray-bg">
+<style type="text/css">
+	textarea{
+		border: 2px;  //可根据需要修改有无边框显示长度和宽带
+		overflow: auto;
+		height: 100%;
+		width: 100%
+	}
+	input{
+		width: 100%;
+		height: 100%;
+		display: block;
+		border: 2px;
+		margin:0;
+		padding:0;
+	}
+	.changed{
+		background:#cccccc;
+		padding:0px 0px 0px 0px;
+		margin:1px;
+		border:1px solid #f4ede6;
+		position: static;
+		bottom:0px;
+		line-height:20px;
+		width: 100%;
+		height: 100%;
+	}
+</style>
+<div class="container-div">
+	<div class="row">
+		<div class="col-sm-12 search-collapse">
+			<form id="mould-form">
+				<input id="id" name="id" hidden="hidden" >
+				<input id="dbInfoId" name="dbInfoId" hidden="hidden" >
+				<input id="tblName" name="tblName" hidden="hidden" >
+				<div class="select-list">
+					<ul>
+						<li style="display:inline-block; ">
+							模板名称：<input type="text" name="mouldName" />
+						</li>
+						<li>
+							<a class="btn btn-primary btn-rounded btn-sm" onclick="$.treeTable.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+							<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+						</li>
+					</ul>
+				</div>
+			</form>
+		</div>
+
+		<div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+
+		</div>
+		<div class="col-sm-12 select-table table-striped">
+			<table id="bootstrap-tree-table" class="table table-responsive table-striped table-bordered table-hover table-condensed " data-mobile-responsive="true" style="margin:0; padding:0;"></table>
+		</div>
+	</div>
+</div>
+
+<div th:include="include :: footer"></div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content" style="width: 800px; height: 560px;">
+			<div class="modal-body" style="width: 100%; height: 85%;">
+				<table class="table table-striped table-bordered" style="width: 100%; height: 100%;">
+					<thead>
+						<tr>
+							<td width="8%">报表名称：</td>
+							<td width="12%" colspan="6">
+								<input id="rptName" name="rptName" class="form-control" type="text" >
+							</td>
+						</tr>
+						<tr>
+							<td width="8%">数据项：</td>
+							<td width="12%">
+								<div class="col-sm-8 changed">
+									<select id="colName" name="colName" class="form-control" type="text" onchange="changeCol()" style="width: 100%; height: 100%">
+									</select>
+								</div>
+							</td>
+							<td width="6%">比较符：</td>
+							<td width="12%">
+								<div class="col-sm-8 changed">
+									<select id="comp1" name="comp1" class="form-control" type="text" style="width: 100%; height: 100%">
+									</select>
+								</div>
+							</td>
+							<td width="6%">比较值：</td>
+							<td width="12%">
+								<div class="col-sm-8 changed">
+									<input id="v1" name="v1" class="form-control" type="text" style="width: 100%; height: 100%">
+								</div>
+							</td>
+							<td width="3%">
+								<a class="btn btn-success" onclick="add2Criteria()" >
+									<i class="fa fa-plus"></i>
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<td width="8%" colspan="1" rowspan="2">条件：</td>
+							<td width="12%" colspan="5" rowspan="2">
+								<div class="col-sm-8 changed">
+									<select name="cdt" id="cdt" size="19" multiple="multiple" style="width: 100%; text-align:center;text-align-last:center;padding-left:6px; margin:-0.6rem 0;">
+									</select>
+								</div>
+							</td>
+							<td width="3%" rowspan="1">
+								<a class="btn btn-success" onclick="delOneOption()" >
+									<i class="fa fa-remove"></i>
+								</a>
+							</td>
+						</tr>
+					</thead>
+
+				</table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn-primary" onclick="myConfirm()">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script th:inline="javascript">
+	var addFlag = [[${@permission.hasPermi('client:mould:add')}]];
+	var editFlag = [[${@permission.hasPermi('client:mould:edit')}]];
+	var removeFlag = [[${@permission.hasPermi('client:mould:remove')}]];
+	var datas = [[${@dict.getType('sys_show_hide')}]];
+	var prefix = ctx + "client/charts";
+
+	$(function() {
+		var options = {
+			url: prefix + "/listChartMould",
+			createUrl: prefix + "/add/{id}",
+			updateUrl: prefix + "/edit/{id}",
+			removeUrl: prefix + "/remove/{id}",
+			modalName: "图形报表模板",
+			columns: [
+				{
+					checkbox: true
+				},
+				{
+					field: 'mouldName',
+					title: '模板名称',
+					width: '10%',
+					align: "center",
+					formatter: function(value, row, index) {
+						if ($.common.isEmpty(row.icon)) {
+							return row.mouldName;
+						} else {
+							return '<i class="' + row.icon + '"></i> <span class="nav-label">' + row.mouldName + '</span>';
+						}
+					}
+				},
+				{
+					title: '图表模板名称',
+					field: 'name',
+					width: '20%',
+					formatter: function(value, row, index) {
+						if ($.common.isEmpty(row.icon)) {
+							return row.name;
+						} else {
+							return '<i class="' + row.icon + '"></i> <span class="nav-label">' + row.name + '</span>';
+						}
+					}
+				},
+				{
+					title: '备注',
+					field: 'remark',
+					width: '20%'
+				},
+				{
+					title: '创建者id',
+					field: 'createBy',
+					width: '10%',
+					align: "left"
+				},
+				{
+					field: 'createTime',
+					title: '创建时间',
+					width: '10%',
+					align: "left"
+				},
+				{
+					title: '操作',
+					width: '20%',
+					align: "left",
+					formatter: function(value, row, index) {
+						var actions = [];
+						actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="getReportData(\'' + row.id + '\')"><i class="fa fa-edit"></i>生成报表</a> ');
+						// actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="editDataItem(\'' + row.id + '\')"><i class="fa fa-edit"></i>查看</a> ');
+						// actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="remove(\'' + row.id + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+					}
+				}
+			]
+		};
+		$.treeTable.init(options);
+	});
+
+	/**
+	 *
+	 * @param id	图形报表模板id
+	 */
+	function getReportData(id) {
+		//dbInfoId tblName
+		console.log("id:" + id);
+		$("#id").val(id);
+		// $("#tblName").val(mainDbInfoId);
+		var detailList = '{"id":' + id + '}';
+		$.ajax({
+			url: "/client/charts/getReportData",
+			contentType: "application/json;charset=UTF-8",
+			dataType: "json",
+			cache: false,
+			data: detailList,
+			type: 'POST',
+			json: 'callback',
+			// success: function (data) {
+			// 	console.log("data:" + data);
+			// 	var body = layer.getChildFrame('body', index);
+			// 	layer.close(index);
+			// }
+			success: function (result) {
+				console.log(result);
+				// $.modal.closeAll();
+				if (result.code == web_status.SUCCESS) {
+					$.modal.closeAll();
+					$.modal.closeLoading();
+					$.modal.alertSuccess(result.msg);
+					$.modal.enable();
+				} else {
+					$.modal.closeAll();
+					$.modal.closeLoading();
+					$.modal.alertError(result.msg);
+					$.modal.enable();
+				}
+			}
+		})
+	}
+
+	// 6.设置select中text="paraText"的第一个Item为选中
+	function jsSelectItemByValue(objSelect, objItemText) {
+		//判断是否存在
+		var isExit = false;
+		for (var i = 0; i < objSelect.options.length; i++) {
+			if (objSelect.options[i].text == objItemText) {
+				isExit = true;
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	function changeCol() {
+		// $('#column').empty();
+		var dbId = jQuery("#colName option:selected").val();
+		// console.log("selected id:" + dbId);
+		var strs= []; //定义一数组
+		strs= dbId.split("-"); //字符分割  strs[1]:pid strs[2]:id strs[3] sort
+		var ss = strs[0] + "-" + strs[1];
+		var colName = strs[0];
+		var dataType = 0;
+		dataType = strs[1];
+		// console.log("colName:" + colName + ",dataType:" + dataType);
+
+		$('#comp1').empty();
+		var options = '<option value ="0">请选择</option>';
+		if(dataType=="0"){
+			options += '<option value="bigger" >大于</option>';
+			options += '<option value="biggerEqual" >大于等于</option>';
+			options += '<option value="equal" >等于</option>';
+			options += '<option value="smaller" >小于</option>';
+			options += '<option value="smallerEqual" >小于等于</option>';
+		}
+		if(dataType=="1"){
+			options += '<option value="bigger" >大于</option>';
+			options += '<option value="biggerEqual" >大于等于</option>';
+			options += '<option value="equal" >等于</option>';
+			options += '<option value="smaller" >小于</option>';
+			options += '<option value="smallerEqual" >小于等于</option>';
+		}
+		if(dataType=="2"){
+			options += '<option value="bigger" >大于</option>';
+			options += '<option value="biggerEqual" >大于等于</option>';
+			options += '<option value="equal" >等于</option>';
+			options += '<option value="smaller" >小于</option>';
+			options += '<option value="smallerEqual" >小于等于</option>';
+		}
+		// for (var i=0;i<data.rows.length;i++ ){
+		// 	options += '<option value="' + data.rows[i].name + '" >' + data.rows[i].description + '</option>';
+		// }
+		$('#comp1').append(options)
+	}
+	
+	function myConfirm() {
+		var id = $("#id").val();
+		var rptName = $("#rptName").val();
+
+		var detailList = '{"reportMouldId": ' + id + ', "rptName": "' + rptName + '","data": [';
+		//{"detailId": 74, "operator": 7, "p1": "2019-01-01 00:00:00", "p2": "2019-10-31 23:59:59"}]}';
+
+		var collChkNodes = document.getElementById("cdt");
+		if(collChkNodes.length<1){
+			alert("请设置数据条件");
+			return;
+		}
+		for(var i = collChkNodes.length-1; i >= 0; i--) {//此处需要遍历移除
+			console.log("selected-i:" + i);
+			var id1 = document.getElementById("cdt").options[i].value;
+			console.log("value[" + i + "]:" + id1);
+			document.getElementById("cdt").options[i].text;
+
+			if(i==collChkNodes.length-1) {
+				detailList += '{"operator":"' + id1 + '","p1":"' + document.getElementById("cdt").options[i].text + '"}';
+			}else{
+				detailList += ',{"operator":"' + id1 + '","p1":"' + document.getElementById("cdt").options[i].text + '"}';
+			}
+		}
+		detailList += ']}';
+		console.log("param:" + detailList);
+		alert(detailList);
+		if(""==rptName.trim()){
+			alert("请输入模板名称");
+			return;
+		}
+		$.ajax({
+			type: "post",
+			url: "/client/dzReportMould/extractData",
+			data: detailList,
+			dataType: 'json',
+			cache: false,
+			contentType: "application/json;charset=UTF-8",
+			type: 'POST',
+			beforeSend: function () {
+				$.modal.loading("正在处理中，请稍后...");
+				$.modal.disable();
+			},
+			success: function (result) {
+				// console.log("data:" + result);
+
+				if (result.code == web_status.SUCCESS) {
+					// $.modal.closeAll();
+					// $.modal.closeLoading();
+					$.modal.alertSuccess(result.msg);
+					// $.modal.enable();
+					parent.$.treeTable.refresh();
+					var index = parent.layer.getFrameIndex(window.name);
+					parent.layer.close(index);
+				} else {
+					// $.modal.closeAll();
+					// $.modal.closeLoading();
+					$.modal.alertError(result.msg);
+					// $.modal.enable();
+				}
+				// $("#myModal").modal("show");
+
+
+			}
+		})
+	}
+
+	//模态框
+	//初始化数据项列表
+	function initColumns() {
+		//获取被选中的option标签
+		var dbId = jQuery("#TabName option:selected").val();
+		var id = $("#id").val();
+
+		$.ajax({
+			type: "get",
+			url: "/client/mould/set/columns?id=" + id + "&tblName=" + dbId,
+			dataType: 'json',
+			success: function (data) {
+				var html = "";
+				for (var i = 0; i < data.rows.length; i++) {
+					html += '<tr>' +
+							'<td align="center" style="width:45px;"><input role="checkbox" type="checkbox" class="cbox checkbox" name="colFrom"></td>' +
+							'<td><input class="form-control" type="text" value="' + data.rows[i].name + '"></td>' +
+							'<td><input class="form-control" type="text" value="' + data.rows[i].description + '"></td>' +
+							'<td><input class="form-control" type="text" value="' + data.rows[i].dtType + '"></td>' +
+							'</tr>';
+				}
+				tbodyFrom.innerHTML = html;
+			}
+		})
+	}
+
+    cdt.onchange = function () {
+        var ind = document.getElementById("cdt").selectedIndex;
+        var criteria = document.getElementById("cdt").options[ind].text;
+        var strs= []; //定义一数组
+        strs= criteria.split(" "); //字符分割  strs[1]:pid strs[2]:id strs[3] sort
+        var column = strs[0].replace("[", "").replace("]", "");
+        var colObj = document.getElementById("colName");
+        document.getElementById("colName").selectedIndex = getIndexEqual(column, colObj);
+
+        var sv = document.getElementById("colName").options[document.getElementById("colName").selectedIndex].value;
+		console.log("colName.selectedIndex.value:" + sv);
+		var sarry= []; //定义一数组
+		sarry= sv.split("-");
+		var dataType = sarry[1];
+        $('#comp1').empty();
+		var options = '<option value ="0">请选择</option>';
+		if(dataType=="0"){
+			options += '<option value="bigger" >大于</option>';
+			options += '<option value="biggerEqual" >大于等于</option>';
+			options += '<option value="equal" >等于</option>';
+			options += '<option value="smaller" >小于</option>';
+			options += '<option value="smallerEqual" >小于等于</option>';
+		}
+		if(dataType=="1"){
+			options += '<option value="bigger" >大于</option>';
+			options += '<option value="biggerEqual" >大于等于</option>';
+			options += '<option value="equal" >等于</option>';
+			options += '<option value="smaller" >小于</option>';
+			options += '<option value="smallerEqual" >小于等于</option>';
+		}
+		if(dataType=="2"){
+			options += '<option value="bigger" >大于</option>';
+			options += '<option value="biggerEqual" >大于等于</option>';
+			options += '<option value="equal" >等于</option>';
+			options += '<option value="smaller" >小于</option>';
+			options += '<option value="smallerEqual" >小于等于</option>';
+		}
+		$('#comp1').append(options);
+
+        var compObj = document.getElementById("comp1");
+        document.getElementById("comp1").selectedIndex = getIndexEqual(strs[1], compObj);
+
+        document.getElementById("v1").value = strs[2].replace("[", "").replace("]", "");
+    }
+
+	function add2Criteria() {
+		var selectObj = document.getElementById("cdt");
+		// if(selectObj.length<=1 && ""==selectObj.options[0].text.trim()){
+		// 	document.getElementById("cdt").options.remove(0);
+		// }
+		// alert(selectObj.length);
+		var colName=$("#colName").find("option:selected").text();  //获取Select选择的Text
+		var vColName=$("#colName").find("option:selected").val();  //获取Select选择的value
+		var comp1=$("#comp1").find("option:selected").text();
+		var v1 = document.getElementById("v1").value;
+		var cdt = "[" + colName + "] " + comp1 + " [" + v1 + "]";
+		var ii = getIndexContainCriteria("[" + colName + "] " + comp1 + " [", selectObj);
+		if(ii>=0){
+            selectObj.options[ii].text = cdt;
+		}else {
+            selectObj.options[selectObj.length] = new Option(cdt, vColName);
+        }
+	}
+
+	function getIndexContainCriteria(ss, obj) {
+        for(var i = 0; i<obj.length; i++){
+            if(obj.options[i].text.indexOf(ss)>=0){return i;}
+        }
+        return -1;
+    }
+
+    function getIndexEqual(ss, obj) {
+        for(var i = 0; i<obj.length; i++){
+            if(obj.options[i].text==ss){return i;}
+        }
+        return -1;
+    }
+
+	//动态删除select中的某一项option：
+	function delOneOption(){
+		var collChkNodes = document.getElementById("cdt");
+		for(var i = collChkNodes.length-1; i >= 0; i--) {//此处需要遍历移除
+			console.log("i:" + i);
+			if (collChkNodes[i].selected) {
+				console.log("selected-i:" + i);
+				document.getElementById("cdt").options.remove(i);
+			}
+		}
+	}
+</script>
+</body>
+</html>

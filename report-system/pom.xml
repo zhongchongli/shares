@@ -8,15 +8,15 @@
         <version>3.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    
+
     <artifactId>report-system</artifactId>
-    
+
     <description>
-	    system系统模块
-	</description>
-	
+        system系统模块
+    </description>
+
     <dependencies>
-		<!-- 通用工具-->
+        <!-- 通用工具-->
         <dependency>
             <groupId>com.dongzhe</groupId>
             <artifactId>report-common</artifactId>
@@ -53,7 +53,11 @@
             <artifactId>groovy-all</artifactId>
             <version>2.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
 
     </dependencies>
-	
+
 </project>

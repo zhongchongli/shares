@@ -7,7 +7,6 @@ import java.util.Date;
  * @author 
  */
 public class BaseShareDO implements Serializable {
-    private Long id;
 
     /**
      * 股票编码
@@ -35,14 +34,6 @@ public class BaseShareDO implements Serializable {
     private String codeType;
 
     private static final long serialVersionUID = 1L;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getCode() {
         return code;
@@ -96,8 +87,7 @@ public class BaseShareDO implements Serializable {
             return false;
         }
         BaseShareDO other = (BaseShareDO) that;
-        return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getCode() == null ? other.getCode() == null : this.getCode().equals(other.getCode()))
+        return (this.getCode() == null ? other.getCode() == null : this.getCode().equals(other.getCode()))
             && (this.getName() == null ? other.getName() == null : this.getName().equals(other.getName()))
             && (this.getShortCode() == null ? other.getShortCode() == null : this.getShortCode().equals(other.getShortCode()))
             && (this.getStartDay() == null ? other.getStartDay() == null : this.getStartDay().equals(other.getStartDay()))
@@ -108,7 +98,6 @@ public class BaseShareDO implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getCode() == null) ? 0 : getCode().hashCode());
         result = prime * result + ((getName() == null) ? 0 : getName().hashCode());
         result = prime * result + ((getShortCode() == null) ? 0 : getShortCode().hashCode());
@@ -123,7 +112,6 @@ public class BaseShareDO implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", id=").append(id);
         sb.append(", code=").append(code);
         sb.append(", name=").append(name);
         sb.append(", shortCode=").append(shortCode);

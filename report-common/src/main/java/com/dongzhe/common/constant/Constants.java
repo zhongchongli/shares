@@ -1,5 +1,7 @@
 package com.dongzhe.common.constant;
 
+import java.sql.SQLTransactionRollbackException;
+
 /**
  * 通用常量信息
  * 
@@ -86,6 +88,32 @@ public class Constants
     /**
      * 动态数据库接口地址
      */
-    public static String PREFIX_INTERFACE_URL = "http://localhost:8081/";
+    public static String PREFIX_INTERFACE_URL = "http://hq.sinajs.cn/list";
 
+    public static  String PREFIX_ALL_LIST_URL = "http://api.k780.com/?app=finance.stock_list&category=hs&appkey=10003&sign=b59bc3ef6191eb9f747dd4e83c99f2a4&format=json";
+
+    public interface PREFIX_ALL_LIST {
+        String URL = "http://api.k780.com/";
+        String APP = "finance.stock_list";
+        String CATEGORY = "hs";
+        String APPKEY = "10003";
+        String SIGN = "b59bc3ef6191eb9f747dd4e83c99f2a4";
+        String FORMAT = "json";
+    }
+
+    public interface PREFIX_TENCENT{
+        //http://qt.gtimg.cn/q=sz000858
+        String URL = "http://qt.gtimg.cn/";
+        String APP = "finance.stock_list";
+        String CATEGORY = "hs";
+        String APPKEY = "10003";
+        String SIGN = "b59bc3ef6191eb9f747dd4e83c99f2a4";
+        String FORMAT = "json";
+    }
+
+    public interface PREFIX_NET163{
+        //http://quotes.money.163.com/service/chddata.html?code=0600756&start=20160902&end=20171108&fields=TCLOSE;HIGH;LOW;TOPEN;LCLOSE;CHG;PCHG;VOTURNOVER
+        String URL = "http://quotes.money.163.com/service/chddata.html";
+        //code="0600756";    start=20160902 end=20171108 fields=TCLOSE;HIGH;LOW;TOPEN;LCOSE;CHG;PCHG;VOTURNOVER
+    }
 }

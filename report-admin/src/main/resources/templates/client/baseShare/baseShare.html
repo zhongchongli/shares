@@ -11,10 +11,13 @@
 				<div class="select-list">
 					<ul>
 						<li>
-							部门名称：<input type="text" name="deptName"/>
+							股票代码：<input type="text" name="code"/>
 						</li>
 						<li>
-							部门状态：<select name="status" th:with="type=${@dict.getType('sys_normal_disable')}">
+							股票名称：<input type="text" name="name"/>
+						</li>
+						<li>
+							股票类别：<select name="codeType" th:with="type=${@dict.getType('sys_share_type')}">
 							<option value="">所有</option>
 							<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
 						</select>
@@ -34,6 +37,9 @@
 			</a>
 			<a class="btn btn-primary" onclick="updateShares()" shiro:hasPermission="client:share:edit">
 				<i class="fa fa-edit"></i> 更新
+			</a>
+			<a class="btn btn-primary" onclick="getAllDatas()" shiro:hasPermission="client:share:edit">
+				<i class="fa fa-edit"></i> 同步数据
 			</a>
 		</div>
 		<div class="col-sm-12 select-table table-striped">
@@ -124,7 +130,7 @@
 		$.modal.confirm("确定更新信息吗？", function() {
 			$.ajax({
 				type : 'post',
-				url: prefix + "/remove/" + id,
+				url: prefix + "/update",
 				success : function(result) {
 					if (result.code == web_status.SUCCESS) {
 						$.modal.msgSuccess(result.msg);
@@ -135,6 +141,43 @@
 				}
 			});
 		});
+	}
+
+	function getAllDatas() {
+		$.modal.confirm("确定同步交易信息吗？", function() {
+			$.ajax({
+				type : 'post',
+				url: prefix + "/getAllDatas",
+				success : function(result) {
+					if (result.code == web_status.SUCCESS) {
+						$.modal.msgSuccess(result.msg);
+						$.treeTable.refresh();
+					} else {
+						$.modal.msgError(result.msg);
+					}
+				}
+			});
+		});
+	}
+
+	function test() {
+		// $stockCode = 600000
+		// $url = "http://money.finance.sina.com.cn/corp/go.php/vMS_MarketHistory/stockid/{0}.phtml" -f $stockCode
+		// $wc = New-Object System.Net.WebClient
+		// $content = $wc.DownloadString($url)
+		//
+		// $reg = "<a target='_blank's+href='http://biz.finance.sina.com.cn/stock/history_min.php?symbol=shd{6}&date=d{4}-d{2}-d{2}'>s*([^s]+)s+</a>s*</div></td>s*<td[^d]*([^<]*)</div></td>s+<td[^d]*([^<]*)</div></td>s+<td[^d]*([^<]*)</div></td>s+<td[^d]*([^<]*)</div></td>s+"
+		// $result = [RegEx]::matches($content, $reg)
+		//
+		// foreach($item in $result)
+		// {
+		// 	$date = $item.Groups[1].Value # 时间
+		// 	$opening = $item.Groups[2].Value # 开盘
+		// 	$maxHigh = $item.Groups[3].Value # 最高
+		// 	$closing = $item.Groups[4].Value # 收盘
+		// 	$maxLow = $item.Groups[5].Value # 最低
+		// 	Write-Host $date $opening $maxHigh $closing $maxLow
+		// }
 	}
 </script>
 </body>

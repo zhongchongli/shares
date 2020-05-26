@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Lenovo
@@ -51,6 +52,21 @@ public class BaseShareServiceImpl implements IBaseShareService {
     @Override
     public int updateByPrimaryKeySelective(BaseShareDO record) {
         return baseShareMapper.updateByPrimaryKeySelective(record);
+    }
+
+    @Override
+    public int addBatch(Map<String, Object> map2) {
+        return baseShareMapper.addBatch(map2);
+    }
+
+    @Override
+    public int insertOrUpdateBatch(List<BaseShareDO> listToInsert) {
+        return baseShareMapper.insertOrUpdateBatch(listToInsert);
+    }
+
+    @Override
+    public int insertOrUpdateOne(Map<String, Object> map) {
+        return baseShareMapper.insertOrUpdateOne(map);
     }
 
 }
